@@ -46,9 +46,11 @@ Spline(7) = {11,12,13,14,1};
 
 Disk(8) = {0.5,0.5,0,R1,R2}; //on définit l'ellipse 
 
-
+Line Loop(9) = {2,1,3,6,4,5,7};
+Plane Surface(10)= {9};
 //a changer de manière à mailler que l'ellipse donc activer le d'après et créer le maillage du sous marin
-//Surface(1) = {1}; //on définit la surface de l'ellipse
+
+BooleanDifference{ Surface{8};Delete;}{ Surface{10};Delete;}
 
 
 //Delete {Surface{8};}
