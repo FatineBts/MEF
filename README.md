@@ -6,7 +6,9 @@
   
   - submarine.geo : donne la représentation du sous marin, visualisable avec gmsh
   - submarine.msh : fichier associé à la visualisation
-  - assembleur.py : 
-  
+  - assembleur.py : assembleur des éléments finis P1 - Lagrange 
   
   Pour télécharger gmsh : http://gmsh.info
+  Pour télécharger Paraview : https://www.paraview.org
+
+  Comment lancer le projet : en cours 
