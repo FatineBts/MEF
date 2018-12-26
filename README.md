@@ -4,8 +4,8 @@
   
   Fichiers : 
   
-  - submarine.geo : donne la représentation du sous marin, visualisable avec gmsh
-  - submarine.msh : fichier associé à la visualisation
+  - submarine.geo : donne la représentation du sous-marin, visualisable avec gmsh
+  - submarine.msh : maillage du sous-marin
   - assembleur.py : assembleur des éléments finis P1 - Lagrange 
   
   Pour télécharger : 
