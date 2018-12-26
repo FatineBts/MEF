@@ -6,7 +6,8 @@
   
   - submarine.geo : donne la représentation du sous-marin, visualisable avec gmsh
   - submarine.msh : maillage du sous-marin
-  - assembleur.py : assembleur des éléments finis P1 - Lagrange 
+  - lecture.py : pour lire les fichiers msh
+  - matrices.py : pour calculer la matrice de formulation faible, de masse, de rigidité et le membre de droite
   
   Pour télécharger : 
   - gmsh : http://gmsh.info
