@@ -12,4 +12,6 @@
   - gmsh : http://gmsh.info
   - Paraview : https://www.paraview.org
 
-  Comment lancer le projet : en cours 
+  Comment lancer le projet : 
+  
+  Utiliser Python2 ... en cours 
