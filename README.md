@@ -1,4 +1,4 @@
-                  Projet réalisé dans le cadre du cours de Maillage des éléments finis encadré par Bertrand Thierry
+            Projet réalisé dans le cadre du cours de Maillage des éléments finis encadré par Bertrand Thierry
                          
   Enoncé : https://ljll.math.upmc.fr/bthierry/course/fem_tp/python_project/
   
