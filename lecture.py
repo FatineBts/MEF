@@ -6,30 +6,63 @@ import numpy as np
 import math 
 
 def lecture_fichier_msh(fichier) : 
+	Entities = []
 	Nodes = []
 	Elements = []
-	nombre_lignes = 0
+	Nombre_Nodes = []
+	Nombre_Elements = []
+	Nombre_lignes = 0
 	lignes = open(fichier, "r")
 	l = lignes.readlines() #va permettre de lire le fichier 
 
 	for i in l: #donne le nombre de lignes du fichier 
-		nombre_lignes += 1
+		Nombre_lignes += 1
 	
-	print "Le fichier comporte " + str(nombre_lignes) + " lignes.\n"
+	print "Le fichier comporte " + str(Nombre_lignes) + " lignes."
 
-	for i in range(0,nombre_lignes):
-		if(l[i]=='$Nodes\n'): #si on rencontre des noeuds 
-			for j in range(i+2,nombre_lignes):
+
+	for i in range(0,Nombre_lignes):
+		if(l[i]=='$Entities\n'): #si on rencontre des noeuds
+			for j in range(i+1,Nombre_lignes):
+				if l[j]!='$EndEntities\n':
+					l[j] = l[j].split(" ")
+					Entities.append(l[j])		
+				else: 
+					break;
+
+		if(l[i]=='$Nodes\n'): #si on rencontre des noeuds
+			Nombre_Nodes = l[i+1].split(" ")
+			for j in range(i+2,Nombre_lignes):
 				if l[j]!='$EndNodes\n':
-					a = l[j].split(" ")[0] #sont toujours composés de 4 élements
-					b = l[j].split(" ")[1]
-					c = l[j].split(" ")[2]
-					d = l[j].split(" ")[3]
-					liste = [a,b,c,d]
-					Nodes.append(liste)			
+					l[j] = l[j].split(" ")
+					Nodes.append(l[j])		
 				else: 
 					break; 
 
+		if(l[i]=='$Elements\n'): #si on rencontre des noeuds 
+			Nombre_Elements = l[i+1].split(" ") 
+			for j in range(i+2,Nombre_lignes):
+				if l[j]!='$EndElements\n':
+					l[j] = l[j].split(" ") #pour convertir l[j] en liste avant de mettre dans Elements
+					Elements.append(l[j])
+				else: 
+					break; 
+	 
+	print "Premier Entity : "
+	print Entities[0]
+	print "Premier triangle : "
+	print Nodes[0]
+	#print Nodes[0][1]
+	print "Premier élement : "
+	print Elements[0]
+	print "Nombre de triangles :"
+	print Nombre_Nodes
+	print "Nombre d'élements :"
+	print Nombre_Elements
+	print "Test :"
+	a = float(Nodes[5][1]) + 1 
+	print a 
+
 ########################## Appel de fonctions ########################
 
-lecture_fichier_msh("sousmarin_simple.msh")
+lecture_fichier_msh("sousmarin.msh")
