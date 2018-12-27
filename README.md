@@ -10,10 +10,10 @@
 
   Fichiers : 
   
-  - sousmarin.geo : donne la représentation avancée (figure 2 énoncé) du sous-marin, visualisable avec gmsh
-  - sousmarin.msh : maillage du sous-marin de la figure 2 
   - sousmarin_simple.geo : donne la représentation (figure 1 énoncé) du sous-marin, visualisable avec gmsh
   - sousmarin_simple.msh : maillage du sous-marin de la figure 1 
+  - sousmarin.geo : donne la représentation avancée (figure 2 énoncé) du sous-marin, visualisable avec gmsh
+  - sousmarin.msh : maillage du sous-marin de la figure 2 
   - lecture.py : pour lire les fichiers msh
   - matrices.py : pour calculer la matrice de formulation faible, de masse, de rigidité et le membre de droite
   
