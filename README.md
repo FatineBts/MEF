@@ -19,3 +19,6 @@
 
   Comment lancer le projet : 
   Utiliser Python2 ... en cours 
+
+/Users/fatine/Desktop/fig1.png
+/Users/fatine/Desktop/fig2.png
