@@ -1,4 +1,5 @@
 SetFactory("OpenCASCADE");
+Mesh.MshFileVersion = 2.2;
 
 DefineConstant[
   R = {1, Min 0.5, Max 10, Step 0.1, Name "R"},

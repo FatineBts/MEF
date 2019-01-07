@@ -1,4 +1,5 @@
 SetFactory("OpenCASCADE");
+Mesh.MshFileVersion = 2.2;
 
 h = 0.1;
 p1 = 0.55; 

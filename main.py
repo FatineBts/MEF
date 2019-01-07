@@ -16,12 +16,14 @@ from Scripts.mat_creuse import *
 lecture = Lecture()
 fichier = "Maillage/sousmarin.msh"
 lecture.affichage("lecture_fichier_msh")
-lecture.lecture_fichier_msh(fichier)
+Nodes = []
+Nombre_Nodes, Nodes, Nombre_Elements = lecture.lecture_fichier_msh(fichier)
+#print Nodes
 
 matrice_creuse = Matrice_creuse()
 lecture.affichage("test_matrice")
 matrice_creuse.test_matrice()
 
-ma_matrice = Matrice()
-lecture.affichage("calcul_membre_droite")
-ma_matrice.calcul_membre_droite()
+ma_matrice = Matrice(Nombre_Nodes,Nodes, Nombre_Elements)
+lecture.affichage("calcul_matrice_masse")
+ma_matrice.calcul_matrice_masse()
