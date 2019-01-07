@@ -7,15 +7,16 @@
 #Cours de maillage des éléments finis de Bertrand Thierry
 ##################################################################
 
-from scripts.lecture import *
-from scripts.matrices import *
-from scripts.mat_creuse import *
+from Scripts.lecture import *
+from Scripts.matrices import *
+from Scripts.mat_creuse import *
 
 ########################## Appel de fonctions ########################
 
 lecture = Lecture()
+fichier = "Maillage/sousmarin.msh"
 lecture.affichage("lecture_fichier_msh")
-lecture.lecture_fichier_msh()
+lecture.lecture_fichier_msh(fichier)
 
 matrice_creuse = Matrice_creuse()
 lecture.affichage("test_matrice")
