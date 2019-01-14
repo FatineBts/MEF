@@ -13,7 +13,7 @@
   - sousmarin.geo : donne la représentation avancée (figure 2 énoncé) du sous-marin, visualisable avec gmsh
   - sousmarin.msh : maillage du sous-marin de la figure 2 
   
-  Dossier Script: contient les fichiers Python
+  Dossier Script : contient les fichiers Python
   
 Comment lancer le projet : python2 main.py
   
