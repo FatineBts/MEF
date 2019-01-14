@@ -5,13 +5,15 @@
   Modèle Mathématique : diffraction accoustique 
   
   Fichiers : 
+  - Fichier main.py : fichier à lancer 
   
+  Dossier Maillage : 
   - sousmarin_simple.geo : donne la représentation (figure 1 énoncé) du sous-marin, visualisable avec gmsh
   - sousmarin_simple.msh : maillage du sous-marin de la figure 1 
   - sousmarin.geo : donne la représentation avancée (figure 2 énoncé) du sous-marin, visualisable avec gmsh
   - sousmarin.msh : maillage du sous-marin de la figure 2 
-  - dossier script : contient les fichiers Python
-  - Fichier main.py : fichier à lancer 
+  
+  Dossier Script: contient les fichiers Python
   
 Comment lancer le projet : python2 main.py
   
