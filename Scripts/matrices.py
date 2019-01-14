@@ -9,34 +9,20 @@
 
 import numpy as np
 import math 
-import scipy as sp
+from scipy import sparse
 
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
-		self.nom_fichier = "Maillage/submarine_simple.msh"
 		self.Nombre_lignes = Nombre_lignes 
 		self.Nombre_Nodes = Nombre_Nodes
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
 	
-	# Génération d'une matrice creuse aléatoire
-	def matrice_creuse(self): 
-		# Taille de la matrice
-		n = 5
-		m = 5
-		A = sp.rand(n,m)
-		# Ecrire dans un fichier csr
-		fichier = open("test.csr", "w")
-		for i in range(0,n):
-			for j in range(0,m):
-				fichier.write(repr(A[i][j]))
-				fichier.write('\t')
-			fichier.write('\n')
-		fichier.close()
-
 	def calcul_matrice_masse(self):
 		Matrix = []
+		lignes = []
+		colonnes = []
 		debut = self.Nombre_lignes - self.Nombre_Elements
 		fin = self.Nombre_lignes - debut
 		for j in range(0,fin):
@@ -57,8 +43,22 @@ class Matrice:
 		for i in range(self.Nombre_Elements): 
 			for j in range(self.Nombre_Elements): 
 				Matrix.append(Aire/12.*(2 if i==j else 1)) #si c'est sur la diagonale
-		print("Calcul de la matrice de masse finie !")
-		return Matrix
+		
+		#recuperation des lignes et des colonnes
+		# A[i[k], j[k]] = data[k] donc  A[i[0], j[0]] = Matrix[0] 
+		for i in range(len(self.Elements)): 
+			for j in range(len(self.Elements)): 
+				lignes.append(i) #on recupère les indices des lignes de Matrix 
+				colonnes.append(j) #on recupère les indices des colonnes de Matrix
+
+		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
+		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
+		#La sommation sera automatiquement effectuée par Scipy.
+
+		#je suis pas sure que ce soit les bons arguments à mettre, demander au prof si il faut entrer shape ? cf documentation internet
+		Matrix = sparse.coo_matrix(Matrix, (lignes,colonnes))
+		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
+		return Matrix 
 
 	def calcul_matrice_rigidite(self): 
 		Matrix = []
@@ -78,19 +78,28 @@ class Matrice:
 			#Calcul de l'aire = 1/2 du det 
 			Aire = (x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])
 			Aire = 1./2.*Aire
-		print("Calcul de la matrice de rigidité en cours de développement")
 		#contruction de la matrice 
 		for i in range(self.Nombre_Elements): 
 			for j in range(self.Nombre_Elements): 
-				toto = 1	
-		print("En cours ...")
+				if(i==0 and j == 0): 
+					Matrix.append(1)
+				if(i!=0 and j != 0 and i==j):
+					Matrix.append(1./2.)
+				if(i==0 and j!=0): #cf matrice cours Bertrand Thierry
+					Matrix.append(-1./2.)
+				if(i!=0 and j==0): #cf matrice cours Bertrand Thierry
+					Matrix.append(-1./2.)				
+				else: 
+					Matrix.append(0)
+		print("Calcul de la matrice de rigidité en cours de développement")
+		Matrix = sparse.coo_matrix(Matrix)
+		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)	
 		return Matrix
 
 	def calcul_membre_droite(self):
 		Vecteur = []
 		print "Pas encore fait !"
 		return Vecteur
-
 
 	def resolution_systeme(self,Masse,Rigidite,membre_droite): 
 		np.linalg.solve(Masse+Rigidite,membre_droite)

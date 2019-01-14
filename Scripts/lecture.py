@@ -10,16 +10,19 @@
 #fonction de lecture de fichier .msh
 
 class Lecture:
+	def __init__(self,fichier):
+		self.fichier = fichier
+
 	def affichage(self,nom):
 		print("################################ Fonction",nom," : #########################################")
 
-	def lecture_fichier_msh(self,fichier): 
+	def lecture_fichier_msh(self): 
 		Nodes = []
 		Elements = []
 		Nombre_Nodes = 0
 		Nombre_Elements = 0
 		Nombre_lignes = 0
-		lignes = open(fichier, "r")
+		lignes = open(self.fichier, "r")
 		l = lignes.readlines() #va permettre de lire le fichier 
 
 		for i in l: #donne le nombre de lignes du fichier 

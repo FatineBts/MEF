@@ -13,21 +13,17 @@ import os
 
 ########################## Appel de fonctions ########################
 
-lecture = Lecture()
 fichier = "Maillage/sousmarin_simple.msh"
+lecture = Lecture(fichier)
 print("\n")
 
 lecture.affichage("lecture_fichier_msh")
 Nodes = []
 Elements = []
-Nombre_lignes, Nombre_Nodes, Nodes, Nombre_Elements, Elements = lecture.lecture_fichier_msh(fichier)
+Nombre_lignes, Nombre_Nodes, Nodes, Nombre_Elements, Elements = lecture.lecture_fichier_msh()
 print("\n")
 
 M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
-
-lecture.affichage("matrice_creuse")
-M.matrice_creuse()
-print("\n")
 
 Matrice_de_Masse = []
 lecture.affichage("calcul_matrice_masse")
@@ -50,6 +46,3 @@ print("\n")
 
 #déplace les fichiers caches dans un dossier cache (fait automatiquement en Python3 mais on utilise Python2)
 os.system("mkdir Scripts/__pycache__ | mv Scripts/*.pyc Scripts/__pycache__")
-
-#pour supprimer les fichiers inutiles 
-os.system("rm test.csr")
