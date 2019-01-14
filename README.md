@@ -4,6 +4,11 @@
   
   Modèle Mathématique : diffraction accoustique 
   
+  Bibliothèque Python : 
+  - scipy (https://www.scipy.org)
+  - numpy (http://www.numpy.org)
+  - os (https://docs.python.org/fr/2.7/library/os.html)
+  
   Fichiers : 
   - Fichier main.py : fichier à lancer 
   
