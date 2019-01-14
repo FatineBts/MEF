@@ -41,9 +41,11 @@ class Matrice:
 			Aire = 1./2.*Aire
 		#contruction de la matrice 
 		for i in range(self.Nombre_Elements): 
-			for j in range(self.Nombre_Elements): 
-				Matrix.append(Aire/12.*(2 if i==j else 1)) #si c'est sur la diagonale
-		
+			for j in range(self.Nombre_Elements):
+				if(i==j): 
+					Matrix.append(Aire/12.*2) #si c'est sur la diagonale
+				else: 
+					Matrix.append(Aire/12.*1) #autre
 		#recuperation des lignes et des colonnes
 		# A[i[k], j[k]] = data[k] donc  A[i[0], j[0]] = Matrix[0] 
 		for i in range(len(self.Elements)): 
