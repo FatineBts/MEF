@@ -43,29 +43,16 @@ class Lecture:
 
 			if(l[i]=='$Elements\n'): #si on rencontre des noeuds 
 				tmp = l[i+1].split(" ")
-				Nombre_Elements = float(tmp[0])
+				Nombre_Elements = int(tmp[0])
 				for j in range(i+2,Nombre_lignes):
 					if l[j]!='$EndElements\n':
 						l[j] = l[j].split(" ") #pour convertir l[j] en liste avant de mettre dans Elements
-						tmp = [] #pour convertir le tableau qui était en string en float 
-						for i in range(len(l[j])-1):
-							tmp.append(float(l[j][i]))
-						Elements.append(tmp)
+						tmp = []
+						for i in range(len(l[j])):
+							tmp.append(int(l[j][i]))
+						Elements.append(tmp) #en entier car toujours des entiers
 					else: 
 						break; 
 		 
-
-		print "Premier sommet : "
-		print Nodes[0]
-		#print Nodes[0][1]
-		print "Premier élement : "
-		print Elements[0]
-		print "Nombre de sommets :"
-		print Nombre_Nodes
-		print "Nombre d'élements :" #triangles; segments ...
-		print Nombre_Elements
-		print "Test :"
-		a = float(Nodes[5][1]) + 1 
-		print a 
-		return Nombre_Nodes, Nodes, Nombre_Elements
+		return Nombre_lignes,Nombre_Nodes, Nodes, Nombre_Elements, Elements
 
