@@ -8,9 +8,40 @@
 ##################################################################
 
 import numpy as np
-import math 
+from math import cos
 from scipy import sparse
 from ecriture import *
+import array as arr
+
+"""
+Simulations numériques
+1.Augmentez le nombre d’onde k. Attention, n’oubliez pas que le maillage doit lui aussi devenir de plus en plus fin. Quel est le nombre d’onde maximal que vous avez pu faire tourner ?
+2. Ondes de Herglotz : plutôt qu’une seule onde plane, prenez comme onde incidente une somme d’ondes planes avec un poids particuliers pour chacune d’elles. Ce type d’onde est appelée Onde de Herglotz
+
+Analyse du code
+1. Profiling de code : quelle opération prend le plus de temps CPU ? De mémoire ?
+2. Vitesse du programme en fonction du nombre d’inconnues
+3. Analyse de l’erreur en norme L2
+4. Pourquoi avez-vous fait tel ou tel choix ?
+
+Améliorations
+1. Que pourrions nous modifier pour accélérer le code ?
+2. Que faudrait il modifier pour faire du P2 ? P3 ?
+
+Astuces 
+1. Apportez des résultats de simulation complets avec vous : image du résultat, paramètres utilisés
+2. Soyez active/actif : “j’ai fait ci en utilisant ça, regardez comme je suis un boss”
+3. Préparez un (voire des) exemple(s) ready-to-use : je n’aurais qu’à faire (par exemple) :
+gmsh example.geo -2    # Génération du maillage
+python example.py      # Résolution
+paraview example.vtu   # Affichage
+
+Et boum, ça me génére le maillage, résout le problème, et me l’affiche. Bien entendu, dans ce cas, il faut que le problème soit rapide à résoudre. Si ma machine tombe en rade, ça va probablement me déplaire…
+
+4. N’oubliez pas le fichier README ! Il devrait par exemple m’expliquer comment lancer un exemple simple !
+5. Préparez plusieurs exemples tout prêt, qui peuvent être (pas obligé !) rangés dans des dossiers. Le jour J, vous ne disposez que de 10 minutes pour me présenter votre travail. Rappelez-vous que je ne peux juger votre travail que sur ce que vous me montrez…
+6. Last but not least: versionnez vos codes avec git!
+"""
 
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
@@ -20,40 +51,47 @@ class Matrice:
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
 	
-	def calcul_matrice_masse(self):
+	def f(self,x): 
+		return 0
+		
+	def g(self,x): 
+		x0 = x[0]
+		x1 = x[1]
+		return x0*x1
+
+	def calcul_matrice_masse(self): 
 		Matrix = []
 		lignes = []
 		colonnes = []
-		debut = self.Nombre_lignes - self.Nombre_Elements
-		fin = self.Nombre_lignes - debut
-		for j in range(0,fin):
-			#on recupère le nombre de colonnes pour savoir quel indice prendre 
-			nombre_colonnes_Elements = len(self.Elements[j])
-			#numéro des points qui constituent les triangles 
-			num_p1 = self.Elements[j][nombre_colonnes_Elements-3]
-			num_p2 = self.Elements[j][nombre_colonnes_Elements-2]
-			num_p3 = self.Elements[j][nombre_colonnes_Elements-1]
-			#liste des coordonnées pour chaque point (pas z car on est en 2 D)
-			x1 = self.Nodes[num_p1-1] 
-			x2 = self.Nodes[num_p2-1] 
-			x3 = self.Nodes[num_p3-1]
-			#Calcul de l'aire = 1/2 du det 
-			Aire = (x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]) # x2[1] = y2
-			Aire = 1./2.*Aire
-		#contruction de la matrice 
-		for i in range(self.Nombre_Elements): 
-			for j in range(self.Nombre_Elements):
-				if(i==j): 
-					Matrix.append(Aire/12.*2) #si c'est sur la diagonale
-				else: 
-					Matrix.append(Aire/12.*1) #autre
-		#recuperation des lignes et des colonnes
-		# A[i[k], j[k]] = data[k] donc  A[i[0], j[0]] = Matrix[0] 
-		for i in range(len(self.Elements)): 
-			for j in range(len(self.Elements)): 
-				lignes.append(i) #on recupère les indices des lignes de Matrix 
-				colonnes.append(j) #on recupère les indices des colonnes de Matrix
+		nombre_triangles = 0
 
+		for k in self.Elements: #donne le nombre de triangles 
+			if(k[1]==2):
+				nombre_triangles+=1
+
+		#pour chaque triangle k
+		for k in self.Elements:
+			if(k[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
+				p1 = k[len(k)-3] 
+				p2 = k[len(k)-2]
+				p3 = k[len(k)-1]
+				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+				x1 = self.Nodes[p1-1] 
+				x2 = self.Nodes[p2-1] 
+				x3 = self.Nodes[p3-1]
+				#Calcul de l'aire = 1/2 du det pour chaque triangle 
+				Aire_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) # x2[1] = y2
+				Aire_k = 1./2.*Aire_k #Aire d'un triangle k 
+				#contruction de la matrice en LOCAL
+				for i in range(0,3):  #on met 3 car c'est un triangle
+					for j in range(0,3):
+						if(i==j): 
+							Matrix.append(Aire_k/6.) #si c'est sur la diagonale
+						else: 
+							Matrix.append(Aire_k/12.) #autre
+
+		#La construction GLOBALE de la matrice de masse se fait grace au append en ajoutant au fur et à mesure les 
+		#élements avec append()
 		# On écrit avant de la mettre sous forme de matrice creuse
 		ecriture = Ecriture("Matrice_masse.csv")
 		ecriture.affichage("Ecriture_matrice")
@@ -62,58 +100,77 @@ class Matrice:
 		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
 		#La sommation sera automatiquement effectuée par Scipy.
-
-		#je suis pas sure que ce soit les bons arguments à mettre, demander au prof si il faut entrer shape ? cf documentation internet
-		Matrix = sparse.coo_matrix(Matrix, (lignes,colonnes))
+		
+		Matrix = sparse.coo_matrix(Matrix) #pour former une matrice au format coo
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
+		#print(Matrix)
+		#print("Comparaison avec le nombre de lignes de la matrice, nombre_triangles : ",nombre_triangles*9)
+		#on obtient le meme nombre car commence à 0 dans la matrice donc ok
 		return Matrix 
 
 	def calcul_matrice_rigidite(self): 
 		Matrix = []
-		debut = self.Nombre_lignes - self.Nombre_Elements
-		fin = self.Nombre_lignes - debut
-		for j in range(0,fin):
-			#on recupère le nombre de colonnes pour savoir quel indice prendre 
-			nombre_colonnes_Elements = len(self.Elements[j])
-			#numéro des points qui constituent les triangles 
-			num_p1 = self.Elements[j][nombre_colonnes_Elements-3]
-			num_p2 = self.Elements[j][nombre_colonnes_Elements-2]
-			num_p3 = self.Elements[j][nombre_colonnes_Elements-1]
-			#liste des coordonnées pour chaque point (pas z car on est en 2 D)
-			x1 = self.Nodes[num_p1-1] 
-			x2 = self.Nodes[num_p2-1] 
-			x3 = self.Nodes[num_p3-1]
-			#Calcul de l'aire = 1/2 du det 
-			Aire = (x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])
-			Aire = 1./2.*Aire
-		#contruction de la matrice 
-		for i in range(self.Nombre_Elements): 
-			for j in range(self.Nombre_Elements): 
-				if(i==0 and j == 0): 
-					Matrix.append(1)
-				if(i!=0 and j != 0 and i==j):
-					Matrix.append(1./2.)
-				if(i==0 and j!=0): #cf matrice cours Bertrand Thierry
-					Matrix.append(-1./2.)
-				if(i!=0 and j==0): #cf matrice cours Bertrand Thierry
-					Matrix.append(-1./2.)				
-				else: 
-					Matrix.append(0)
-		print("Calcul de la matrice de rigidité en cours de développement")
+		lignes = []
+		colonnes = []
+		nombre_triangles = 0
 
-		# On écrit avant de la mettre sous forme de matrice creuse
-		ecriture = Ecriture("Matrice_rigidite.csv")
-		ecriture.affichage("Ecriture_matrice")
-		ecriture.ecriture(Matrix)
+		#pour chaque triangle k
+		for k in self.Elements:
+			if(k[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
+				p1 = k[len(k)-3] 
+				p2 = k[len(k)-2]
+				p3 = k[len(k)-1]
+				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+				x1 = self.Nodes[p1-1] 
+				x2 = self.Nodes[p2-1] 
+				x3 = self.Nodes[p3-1]
+				#Calcul de l'aire = 1/2 du det pour chaque triangle 
+				Aire_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) # x2[1] = y2
+				Aire_k = 1./2.*Aire_k #Aire d'un triangle k 
+				#contruction de la matrice en LOCAL
+				for i in range(0,3):  #on met 3 car c'est un triangle
+					for j in range(0,3):
+						toto = 0
 
-		Matrix = sparse.coo_matrix(Matrix)
-		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)	
 		return Matrix
+		
+	def calcul_membre_droite(self,methode):
+		second_membre = []
+		sigma = 2
+		#ici on considère les segments donc les bords
+		for e in self.Elements: 
+			if(e[1]==1): #alors il s'agit d'un segment 
+				p1 = e[len(e)-2] #on a que deux points 
+				p2 = e[len(e)-1]
+				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
+				s2 = self.Nodes[p2-1] 
+				#on va utiliser ici la méthode de Simpson car elle donne un degré de précision de 2
+				s12 = [(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
+				if(methode=="point_du_milieu"): 
+					pdm = self.g(s12)
+					#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
+					sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
+					pdm = np.abs(sigma)/6.
+					second_membre.append(pdm)
+				if(methode=="trapeze"): 
+					trapeze = (self.g(s1)+self.g(s2))
+					#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
+					sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
+					trapeze = np.abs(sigma)/2.
+					second_membre.append(trapeze)
+				if(methode=="simpson"): 
+					simpson = (self.g(s1)+4.*self.g(s12)+self.g(s2))
+					#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
+					sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
+					simpson = np.abs(sigma)/6.
+					second_membre.append(simpson)
 
-	def calcul_membre_droite(self):
-		Vecteur = []
-		print "Pas encore fait !"
-		return Vecteur
+		ecriture = Ecriture("Second_membre.csv")
+		ecriture.affichage("ecriture_second_membre")
+		ecriture.ecriture(second_membre)
+
+		return second_membre
 
 	def resolution_systeme(self,Masse,Rigidite,membre_droite): 
 		np.linalg.solve(Masse+Rigidite,membre_droite)

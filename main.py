@@ -42,8 +42,23 @@ print("Temps d exécution du calcul de la matrice de rigidite avec ecriture : %s
 print("\n")
 
 Membre_de_droite = []
-lecture.affichage("calcul_membre_droite")
-Matrice_de_Droite = M.calcul_membre_droite()
+
+lecture.affichage("calcul_membre_droite methode du point du milieu")
+start_time = time.time()
+Matrice_de_Droite = M.calcul_membre_droite("point_du_milieu")
+print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
+print("\n")
+
+lecture.affichage("calcul_membre_droite methode des trapezes")
+start_time = time.time()
+Matrice_de_Droite = M.calcul_membre_droite("trapeze")
+print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
+print("\n")
+
+lecture.affichage("calcul_membre_droite methode de simpson")
+start_time = time.time()
+Matrice_de_Droite = M.calcul_membre_droite("simpson")
+print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
 print("\n")
 
 #lecture.affichage("resolution_systeme")

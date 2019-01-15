@@ -7,7 +7,7 @@
 #Cours de maillage des éléments finis de Bertrand Thierry
 ##################################################################
 
-#fonction de lecture de fichier .msh
+#fonction d'écriture de fichier .msh
 
 import numpy
 
@@ -16,7 +16,7 @@ class Ecriture:
 		self.nom = nom
 
 	def affichage(self,nom):
-		print("################################ Fonction",nom," : #########################################")
+		print("------------------- Fonction",nom," : -------------------")
 
 
 	def ecriture(self, matrice):
