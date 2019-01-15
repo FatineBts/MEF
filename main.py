@@ -10,6 +10,8 @@
 from Scripts.lecture import *
 from Scripts.matrices import *
 import os
+# Pour le chronométrage
+import time 
 
 ########################## Appel de fonctions ########################
 
@@ -27,12 +29,16 @@ M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
 
 Matrice_de_Masse = []
 lecture.affichage("calcul_matrice_masse")
+start_time = time.time()
 Matrice_de_Masse = M.calcul_matrice_masse()
+print("Temps d exécution du calcul de la matrice de masse avec ecriture : %s secondes ---" % (time.time() - start_time))
 print("\n")
 
 Matrice_de_Rigidite = []
 lecture.affichage("calcul_matrice_rigidite")
+start_time = time.time()
 Matrice_de_Rigidite = M.calcul_matrice_rigidite()
+print("Temps d exécution du calcul de la matrice de rigidite avec ecriture : %s secondes ---" % (time.time() - start_time))
 print("\n")
 
 Membre_de_droite = []
