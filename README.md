@@ -25,7 +25,7 @@
   
   Dossier Script : contient les fichiers Python
   
-  Dossier CSV : contient les résultats obtenus 
+  Dossier CSV : contient les fichiers csv correspondants aux matrices et au second membre 
   
 Comment lancer le projet : python2 main.py
   
