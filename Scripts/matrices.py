@@ -61,8 +61,6 @@ class Matrice:
 
 	def calcul_matrice_masse(self): 
 		Matrix = []
-		lignes = []
-		colonnes = []
 		nombre_triangles = 0
 
 		for k in self.Elements: #donne le nombre de triangles 
@@ -111,9 +109,9 @@ class Matrice:
 
 	def calcul_matrice_rigidite(self): 
 		Matrix = []
-		lignes = []
-		colonnes = []
+		coef = 1./2.
 		nombre_triangles = 0
+		B_k = []
 
 		#pour chaque triangle k
 		for k in self.Elements:
@@ -125,13 +123,27 @@ class Matrice:
 				x1 = self.Nodes[p1-1] 
 				x2 = self.Nodes[p2-1] 
 				x3 = self.Nodes[p3-1]
-				#Calcul de l'aire = 1/2 du det pour chaque triangle 
-				Aire_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) # x2[1] = y2
-				Aire_k = 1./2.*Aire_k #Aire d'un triangle k 
+				determinant_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) # x2[1] = y2
+				B_k = [[x3[2]-x1[2],x1[2]-x2[2]],[x1[1]-x3[1],x2[1]-x1[1]]]
+
+				#on multiplie B_k par 1/deteminant pour chacune de ses valeurs
+				for i in range(0,len(B_k)):
+					for j in range(0,len(B_k)):
+						B_k[i][j] = B_k[i][j] *(1./determinant_k)
+				
 				#contruction de la matrice en LOCAL
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
-						toto = 0
+						if(i==1 and j==1): 
+							Matrix.append(coef*2.) #si c'est sur la diagonale
+						if(i==j and i!=1 and j!=1): 
+							Matrix.append(coef*1.) #si c'est sur la diagonale
+						if(i==0 and j!=0): 
+							Matrix.append(coef*(-1.)) #si c'est sur la diagonale
+						if(j==0 and i!=0): 
+							Matrix.append(coef*(-1.)) #si c'est sur la diagonale
+						else: 
+							Matrix.append(0) #si c'est sur la diagonale
 
 		return Matrix
 

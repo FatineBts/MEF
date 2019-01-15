@@ -77,3 +77,5 @@ print("\n")
 
 #déplace les fichiers caches dans un dossier cache (fait automatiquement en Python3 mais on utilise Python2)
 os.system("mkdir Scripts/__pycache__ | mv Scripts/*.pyc Scripts/__pycache__")
+os.system("mv *.csv CSV")
+
