@@ -10,6 +10,7 @@
 import numpy as np
 import math 
 from scipy import sparse
+from ecriture import *
 
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
@@ -53,6 +54,11 @@ class Matrice:
 				lignes.append(i) #on recupère les indices des lignes de Matrix 
 				colonnes.append(j) #on recupère les indices des colonnes de Matrix
 
+		# On écrit avant de la mettre sous forme de matrice creuse
+		ecriture = Ecriture("Matrice_masse.csv")
+		ecriture.affichage("Ecriture_matrice")
+		ecriture.ecriture(Matrix)
+
 		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
 		#La sommation sera automatiquement effectuée par Scipy.
@@ -94,6 +100,12 @@ class Matrice:
 				else: 
 					Matrix.append(0)
 		print("Calcul de la matrice de rigidité en cours de développement")
+
+		# On écrit avant de la mettre sous forme de matrice creuse
+		ecriture = Ecriture("Matrice_rigidite.csv")
+		ecriture.affichage("Ecriture_matrice")
+		ecriture.ecriture(Matrix)
+
 		Matrix = sparse.coo_matrix(Matrix)
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)	
 		return Matrix
