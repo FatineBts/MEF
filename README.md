@@ -25,6 +25,8 @@
   
   Dossier Script : contient les fichiers Python
   
+  Dossier CSV : contient les résultats obtenus 
+  
 Comment lancer le projet : python2 main.py
   
 ![fig1](https://user-images.githubusercontent.com/23095219/50483647-97791880-09e4-11e9-97a7-15b73f5c5dc1.png)
