@@ -13,6 +13,8 @@ import os
 # Pour le chronométrage
 import time 
 
+print("\n")
+print("Bonjour et bienvenue dans le projet de MEF réalisé par Fatine Bentires Alj et Alexia Zounias-Sirabella !!\n")
 ########################## Appel de fonctions ########################
 
 fichier = "Maillage/sousmarin_simple.msh"
@@ -31,6 +33,8 @@ Matrice_de_Masse = []
 lecture.affichage("calcul_matrice_masse")
 start_time = time.time()
 Matrice_de_Masse = M.calcul_matrice_masse()
+print("\n")
+print("Vous trouverez les résultats dans le fichier Matrice_masse.csv !\n")
 print("Temps d exécution du calcul de la matrice de masse avec ecriture : %s secondes ---" % (time.time() - start_time))
 print("\n")
 
@@ -38,26 +42,32 @@ Matrice_de_Rigidite = []
 lecture.affichage("calcul_matrice_rigidite")
 start_time = time.time()
 Matrice_de_Rigidite = M.calcul_matrice_rigidite()
+print("\n")
+print("Vous trouverez les résultats dans le fichier Matrice_rigidite.csv !\n")
 print("Temps d exécution du calcul de la matrice de rigidite avec ecriture : %s secondes ---" % (time.time() - start_time))
 print("\n")
 
 Membre_de_droite = []
 
-lecture.affichage("calcul_membre_droite methode du point du milieu")
+lecture.affichage("calcul_membre_droite")
 start_time = time.time()
 Matrice_de_Droite = M.calcul_membre_droite("point_du_milieu")
+print("\n")
+print("Vous trouverez les résultats dans le fichier second_membre_point_du_milieu.csv !\n")
 print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
 print("\n")
 
-lecture.affichage("calcul_membre_droite methode des trapezes")
 start_time = time.time()
 Matrice_de_Droite = M.calcul_membre_droite("trapeze")
+print("\n")
+print("Vous trouverez les résultats dans le fichier second_membre_trapeze.csv !\n")
 print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
 print("\n")
 
-lecture.affichage("calcul_membre_droite methode de simpson")
 start_time = time.time()
 Matrice_de_Droite = M.calcul_membre_droite("simpson")
+print("\n")
+print("Vous trouverez les résultats dans le fichier second_membre_simpson.csv !\n")
 print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
 print("\n")
 

@@ -104,7 +104,8 @@ class Matrice:
 		Matrix = sparse.coo_matrix(Matrix) #pour former une matrice au format coo
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
 		#print(Matrix)
-		#print("Comparaison avec le nombre de lignes de la matrice, nombre_triangles : ",nombre_triangles*9)
+		print("Nombre de lignes que l'on doit avoir dans la matrice de Masse : ", nombre_triangles*9)
+		print("Nombre de lignes obtenues :", np.size(Matrix))
 		#on obtient le meme nombre car commence à 0 dans la matrice donc ok
 		return Matrix 
 
@@ -133,7 +134,7 @@ class Matrice:
 						toto = 0
 
 		return Matrix
-		
+
 	def calcul_membre_droite(self,methode):
 		second_membre = []
 		sigma = 2
@@ -166,10 +167,19 @@ class Matrice:
 					simpson = np.abs(sigma)/6.
 					second_membre.append(simpson)
 
-		ecriture = Ecriture("Second_membre.csv")
-		ecriture.affichage("ecriture_second_membre")
-		ecriture.ecriture(second_membre)
-
+		if(methode=="point_du_milieu"): 		
+			ecriture = Ecriture("Second_membre_point_du_milieu.csv")
+			ecriture.affichage("ecriture_second_membre_point_du_milieu")
+			ecriture.ecriture(second_membre)
+		if(methode=="trapeze"): 		
+			ecriture = Ecriture("Second_membre_trapeze.csv")
+			ecriture.affichage("ecriture_second_membre_trapeze")
+			ecriture.ecriture(second_membre)
+		if(methode=="simpson"): 		
+			ecriture = Ecriture("Second_membre_simpson.csv")
+			ecriture.affichage("ecriture_second_membre_simpson")
+			ecriture.ecriture(second_membre)
+	
 		return second_membre
 
 	def resolution_systeme(self,Masse,Rigidite,membre_droite): 
