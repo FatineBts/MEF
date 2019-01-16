@@ -97,8 +97,6 @@ class Matrice:
 						else: 
 							Matrix.append(Aire_k/12.) #autre
 
-		print(len(L))
-
 		#La construction GLOBALE de la matrice de masse se fait grace au append en ajoutant au fur et à mesure les 
 		#élements avec append()
 		# On écrit avant de la mettre sous forme de matrice creuse
