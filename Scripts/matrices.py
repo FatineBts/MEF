@@ -66,6 +66,8 @@ class Matrice:
 
 	def calcul_matrice_masse(self): 
 		Matrix = []
+		L = []
+		C = []
 		nombre_triangles = 0
 
 		for k in self.Elements: #donne le nombre de triangles 
@@ -88,10 +90,14 @@ class Matrice:
 				#contruction de la matrice en LOCAL
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
+						L.append(k[i])
+						C.append(k[j])
 						if(i==j): 
 							Matrix.append(Aire_k/6.) #si c'est sur la diagonale
 						else: 
 							Matrix.append(Aire_k/12.) #autre
+
+		print(len(L))
 
 		#La construction GLOBALE de la matrice de masse se fait grace au append en ajoutant au fur et à mesure les 
 		#élements avec append()
@@ -104,11 +110,11 @@ class Matrice:
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
 		#La sommation sera automatiquement effectuée par Scipy.
 		
-		Matrix = sparse.coo_matrix(Matrix) #pour former une matrice au format coo
+		print(self.Nombre_Nodes)
+		Matrix = sparse.coo_matrix((Matrix),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) #pour former une matrice au format coo
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
-		#print(Matrix)
-		print("Nombre de lignes que l'on doit avoir dans la matrice de Masse : ", nombre_triangles*9)
 		print("Nombre de lignes obtenues :", np.size(Matrix))
+		print("Nombre de lignes que l'on doit avoir dans la matrice de Masse : ", nombre_triangles*9)
 		#on obtient le meme nombre car commence à 0 dans la matrice donc ok
 		return Matrix 
 
@@ -150,6 +156,8 @@ class Matrice:
 						else: 
 							Matrix.append(0) #si c'est sur la diagonale
 
+		Matrix = sparse.coo_matrix(Matrix,shape=(self.Nombre_Nodes,self.Nombre_Nodes))
+		Matrix = Matrix.tocsr()
 		return Matrix
 
 	def calcul_membre_droite(self,methode):
