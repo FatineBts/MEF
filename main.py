@@ -9,7 +9,7 @@
 
 from Scripts.lecture import *
 from Scripts.matrices import *
-#from Scripts.creation_paraview import *
+from Scripts.creation_paraview import *
 import os
 # Pour le chronométrage
 import time 
@@ -76,10 +76,10 @@ print("\n")
 #resolution = M.resolution_systeme(Matrice_de_Masse,Matrice_de_Rigidite,Matrice_de_Droite)
 #print("\n")
 
-#lecture.affichage("creation vue Paraview")
-#C = Creation_paraview(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
-#C.script_paraview()
-#print("\n")
+lecture.affichage("creation vue Paraview")
+C = Creation_paraview(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
+C.script_paraview()
+print("\n")
 
 #déplace les fichiers caches dans un dossier cache (fait automatiquement en Python3 mais on utilise Python2)
 os.system("mv Scripts/*.pyc Scripts/__pycache__")
