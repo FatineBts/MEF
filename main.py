@@ -73,11 +73,11 @@ print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s 
 print("\n")
 
 #lecture.affichage("resolution_systeme")
-#resolution = M.resolution_systeme(Matrice_de_Masse,Matrice_de_Rigidite,Matrice_de_Droite)
+#Resultat = M.resolution_systeme(Matrice_de_Masse,Matrice_de_Rigidite,Matrice_de_Droite)
 #print("\n")
 
 lecture.affichage("creation vue Paraview")
-C = Creation_paraview(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
+C = Creation_paraview(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements,0)
 C.script_paraview()
 print("\n")
 

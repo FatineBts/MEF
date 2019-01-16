@@ -7,65 +7,85 @@
 #Cours de maillage des éléments finis de Bertrand Thierry
 ##################################################################
 
-import numpy
+#documentation : https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf
+
+import numpy as np
+from matrices import *
 
 class Creation_paraview: 
-	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
+	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements,Resultat):
 		self.Nombre_lignes = Nombre_lignes 
 		self.Nombre_Nodes = Nombre_Nodes
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
+		M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
+		self.Nombre_Triangles = M.nombre_de_triangles() #on recupère le nombre de triangles
 
 	def script_paraview(self):
 		fichier = open('paraview.vtu','w') 
-		
+	
 		fichier.write('<VTKFile type="UnstructuredGrid" version="1.0" byte_order="LittleEndian" header_type="UInt64">\n')
 		fichier.write('<UnstructuredGrid>\n')
-		fichier.write('<Piece NumberOfPoints="'+str(self.Nombre_Nodes)+ '" NumberOfCells= "' + str(self.Nombre_Elements) + '">\n')
+		fichier.write('<Piece NumberOfPoints="'+str(self.Nombre_Nodes)+ '" NumberOfCells= "' + str(self.Nombre_Triangles) + '">\n')
 		fichier.write('<Points>\n')
-		fichier.write('<DataArray NumberOfComponents="'+str(3)+'" type="Float64">\n')
-		#0.0 0.0 0 
-		#1.0 0.0 0 
-		#1.0 1.0 0 
-		#0.0 1.0 0 
-		#0.5 0.5 0 
+		fichier.write('<DataArray NumberOfComponents="'+str(3)+'" type="Float64">\n') #nombre de colonnes
+		################################ NumberOfComponents : Pour tous les points ############################
+		#Explication : on recupère les coordonnées ainsi que le numéro de la ligne ie toute les lignes contenants les points
+		for i in self.Nodes:  
+				fichier.write(str(i[0]) + ' ')  
+				fichier.write(str(i[1]) + ' ')
+				fichier.write(str(i[2]) + ' ')
+				fichier.write(str(i[3]) + ' ')
+				fichier.write('\n')
 		fichier.write('</DataArray>\n')
 		fichier.write('</Points>\n')
 		fichier.write('<Cells>\n')
-		fichier.write('<DataArray type="Int32" Name="connectivity">\n')
-		#0 1 4
-		#1 2 4
-		#2 3 4
-		#3 0 4
+
+		fichier.write('<DataArray type="Int32" Name="connectivity">\n') 
+		######## connectivity : Pour chaque triangle on prend les numéro des points qui constituent le triangle #############
+		#Explication : pour chaque triangle uniquement (pas de segments) on récupère les numéro GLOBAUX des sommets
+		for k in self.Elements: 
+				if(k[1]==2):
+					fichier.write(str(k[len(k)-3]) + ' ') 
+					fichier.write(str(k[len(k)-2]) + ' ')
+					fichier.write(str(k[len(k)-1]) + ' ')
+					fichier.write('\n')
 		fichier.write('</DataArray>\n')
-		fichier.write('<DataArray type="Int32" Name="offsets">\n')
-		#3
-		#6
-		#9
-		#12
+
+		fichier.write('<DataArray type="Int32" Name="offsets">\n') 
+		######## offsets : Récupération de la fin de position de chaque triangle dans la partie connectivity###########
+		#Explication : on fait des pas de 3 car on a ajouté 3 éléments dans la partie connectivity
+		pas = 0
+		for k in range(self.Nombre_Elements): 
+				fichier.write(str(pas+3) + '\n') 
+				pas+=3 
 		fichier.write('</DataArray>\n')
-		fichier.write('<DataArray type="UInt8" Name="types">\n')
-		#5 
-		#5 
-		#5 
-		#5 
+
+		fichier.write('<DataArray type="UInt8" Name="types">\n') 
+		########### types : On met les types des éléments ####################
+		#Explication : Pour des triangles le type est 5
+		for k in self.Elements:
+				if(k[1]==2): 
+					fichier.write(str(5) + ' ' + '\n')
 		fichier.write('</DataArray>\n')
 		fichier.write('<Cells>\n')
 		fichier.write('<PointData Scalars="solution">\n')
+
 		fichier.write('<DataArray type="Float64" Name="Real part" format="ascii">\n')
-		#1.0
-		#0.9999949269133752
-		#0.9999949269133752
-		#1.0
-		#-0.9999987317275395
+		########## real part : ##########
+		#Explication : partie reelle des résultats obtenus par la fonction np.linalg.solve()
+		#for i in Resultat: 
+		#	fichier.write(str(np.real(i))+'\n')
+
 		fichier.write('</DataArray>\n')
+
 		fichier.write('<DataArray type="Float64" Name="Imag part" format="ascii">\n')
-		#0.0
-		#-0.0031853017931379904
-		#-0.0031853017931379904
-		#0.0
-		#0.0015926529164868282
+		########## im part : ############
+		#Explication : partie imaginaire des résultats obtenus par la fonction np.linalg.solve()
+		#for i in Resultat: 
+		#	fichier.write(str(np.imag(i))+'\n') 
+
 		fichier.write('</DataArray>\n')
 		fichier.write('</PointData>\n')
 		fichier.write('</Piece>\n')

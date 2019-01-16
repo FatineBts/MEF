@@ -57,6 +57,13 @@ class Matrice:
 	def g(self,x): 
 		return x[0]*x[1]
 
+	def nombre_de_triangles(self): 
+		nombre_triangles = 0
+		for k in self.Elements: #donne le nombre de triangles 
+			if(k[1]==2):
+				nombre_triangles+=1
+		return nombre_triangles
+
 	def calcul_matrice_masse(self): 
 		Matrix = []
 		nombre_triangles = 0
