@@ -15,7 +15,7 @@ import array as arr
 
 """
 Simulations numériques
-1.Augmentez le nombre d’onde k. Attention, n’oubliez pas que le maillage doit lui aussi devenir de plus en plus fin. Quel est le nombre d’onde maximal que vous avez pu faire tourner ?
+1. Augmentez le nombre d’onde k. Attention, n’oubliez pas que le maillage doit lui aussi devenir de plus en plus fin. Quel est le nombre d’onde maximal que vous avez pu faire tourner ?
 2. Ondes de Herglotz : plutôt qu’une seule onde plane, prenez comme onde incidente une somme d’ondes planes avec un poids particuliers pour chacune d’elles. Ce type d’onde est appelée Onde de Herglotz
 
 Analyse du code
@@ -55,9 +55,7 @@ class Matrice:
 		return 0
 		
 	def g(self,x): 
-		x0 = x[0]
-		x1 = x[1]
-		return x0*x1
+		return x[0]*x[1]
 
 	def calcul_matrice_masse(self): 
 		Matrix = []
@@ -70,16 +68,16 @@ class Matrice:
 		#pour chaque triangle k
 		for k in self.Elements:
 			if(k[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
-				p1 = k[len(k)-3] 
+				p1 = k[len(k)-3] # Ca correspond au num des sommets
 				p2 = k[len(k)-2]
 				p3 = k[len(k)-1]
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
-				x1 = self.Nodes[p1-1] 
-				x2 = self.Nodes[p2-1] 
+				x1 = self.Nodes[p1-1] # Equivalent de Loc2Glob
+				x2 = self.Nodes[p2-1] # On aura accès à x y z 
 				x3 = self.Nodes[p3-1]
 				#Calcul de l'aire = 1/2 du det pour chaque triangle 
-				Aire_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) # x2[1] = y2
-				Aire_k = 1./2.*Aire_k #Aire d'un triangle k 
+				det_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) 
+				Aire_k = 1./2.*det_k #Aire d'un triangle k 
 				#contruction de la matrice en LOCAL
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
@@ -160,22 +158,18 @@ class Matrice:
 				s2 = self.Nodes[p2-1] 
 				#on va utiliser ici la méthode de Simpson car elle donne un degré de précision de 2
 				s12 = [(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
+				#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
+				sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
 				if(methode=="point_du_milieu"): 
 					pdm = self.g(s12)
-					#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
-					sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
 					pdm = np.abs(sigma)/6.
 					second_membre.append(pdm)
 				if(methode=="trapeze"): 
 					trapeze = (self.g(s1)+self.g(s2))
-					#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
-					sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
 					trapeze = np.abs(sigma)/2.
 					second_membre.append(trapeze)
 				if(methode=="simpson"): 
 					simpson = (self.g(s1)+4.*self.g(s12)+self.g(s2))
-					#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
-					sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
 					simpson = np.abs(sigma)/6.
 					second_membre.append(simpson)
 

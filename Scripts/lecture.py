@@ -17,8 +17,8 @@ class Lecture:
 		print("################################ Fonction",nom," : #########################################")
 
 	def lecture_fichier_msh(self): 
-		Nodes = []
-		Elements = []
+		Nodes = [] # Sommets
+		Elements = [] # Soit les segments soit triangles etc
 		Nombre_Nodes = 0
 		Nombre_Elements = 0
 		Nombre_lignes = 0
@@ -44,7 +44,7 @@ class Lecture:
 					else: 
 						break; 
 
-			if(l[i]=='$Elements\n'): #si on rencontre des noeuds 
+			if(l[i]=='$Elements\n'): #si on rencontre des éléments
 				tmp = l[i+1].split(" ")
 				Nombre_Elements = int(tmp[0])
 				for j in range(i+2,Nombre_lignes):

@@ -9,7 +9,7 @@
 
 from Scripts.lecture import *
 from Scripts.matrices import *
-from Creation_paraview import *
+#from Scripts.creation_paraview import *
 import os
 # Pour le chronométrage
 import time 
@@ -82,6 +82,6 @@ print("\n")
 #print("\n")
 
 #déplace les fichiers caches dans un dossier cache (fait automatiquement en Python3 mais on utilise Python2)
-os.system("mkdir Scripts/__pycache__ | mv Scripts/*.pyc Scripts/__pycache__")
+os.system("mv Scripts/*.pyc Scripts/__pycache__")
 os.system("mv *.csv CSV")
 
