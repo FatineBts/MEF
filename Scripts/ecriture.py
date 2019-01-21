@@ -15,15 +15,5 @@ class Ecriture:
 	def __init__(self,nom):
 		self.nom = nom
 
-	def affichage(self,nom):
-		print("------------------- Fonction",nom," : -------------------")
-
-
 	def ecriture(self, matrice):
-		fichier = open(self.nom, "w")
-		n = len(matrice)
-		for i in range(0,n):
-			fichier.write(repr(matrice[i]))
-			fichier.write('\n')
-		fichier.write('\n')
-		fichier.close()
+		numpy.savetxt(self.nom, matrice, delimiter=",") 

@@ -8,10 +8,12 @@
 ##################################################################
 
 import numpy as np
-from math import cos
+from math import cos, sin, exp
 from scipy import sparse
 from ecriture import *
 import array as arr
+import numpy
+from cmath import * #pour les nombres complexes
 
 """
 Simulations numériques
@@ -46,16 +48,18 @@ Et boum, ça me génére le maillage, résout le problème, et me l’affiche. B
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
 		self.Nombre_lignes = Nombre_lignes 
-		self.Nombre_Nodes = Nombre_Nodes
+		self.Nombre_Nodes = int(Nombre_Nodes)
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
+		self.alpha = 0.9
 	
-	def f(self,x): 
+	def f(self,x):
 		return 0
-		
-	def g(self,x): 
-		return x[0]*x[1]
+
+	def u_inc(self,x):
+		k=2*np.pi
+		return exp(np.complex(0,1)*k*(x[1]*np.cos(self.alpha)+x[2]*np.sin(self.alpha))) 
 
 	def nombre_de_triangles(self): 
 		nombre_triangles = 0
@@ -65,105 +69,169 @@ class Matrice:
 		return nombre_triangles
 
 	def calcul_matrice_masse(self): 
+		"""
+		Résolution de l'équation diffraction accoustique : - intégrale sur omega (grad u * grad v) + k^2 intégrale sur omega (u * v) - i*k* intégrale sur gamma infini (u*v)
+		En effet l'intégrale sur le bord de N s'annule au vu des conditions de Dirichlet (v nul sur le bord)
+		Matrice de Masse = k^2 intégrale sur omega (u * v) - i*k* intégrale sur gamma infini (u*v)
+		Comme on sait d'après le cours que la matrice vaut Aire/6 sur la diagonale et Aire/12 sur le reste 
+		pour l'équation : intégrale sur omega (u * v), nous n'avons qu'à multiplier par k^2 
+		pour l'équation : - i*k* intégrale sur gamma infini (u*v), nous n'avons qu'à multiplier par -i*k
+		"""	
+
 		Matrix = []
 		L = []
 		C = []
 		nombre_triangles = 0
+		k = 2*np.pi
 
-		for k in self.Elements: #donne le nombre de triangles 
-			if(k[1]==2):
+		for e in self.Elements: #donne le nombre de triangles 
+			if(e[1]==2):
 				nombre_triangles+=1
 
+	################ 1ere partie : gestion de la matrice de masse sur omega #####################
 		#pour chaque triangle k
-		for k in self.Elements:
-			if(k[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
-				p1 = k[len(k)-3] # Ca correspond au num des sommets
-				p2 = k[len(k)-2]
-				p3 = k[len(k)-1]
+		for e in self.Elements:
+			if(e[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
+				p1 = e[len(e)-3] # Ca correspond au num des sommets
+				p2 = e[len(e)-2]
+				p3 = e[len(e)-1]
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				x1 = self.Nodes[p1-1] # Equivalent de Loc2Glob
 				x2 = self.Nodes[p2-1] # On aura accès à x y z 
 				x3 = self.Nodes[p3-1]
 				#Calcul de l'aire = 1/2 du det pour chaque triangle 
-				det_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) 
-				Aire_k = 1./2.*det_k #Aire d'un triangle k 
+				det_e = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]))
+				Aire_e = 1./2.*det_e #Aire d'un triangle k
 				#contruction de la matrice en LOCAL
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
-						L.append(k[i])
-						C.append(k[j])
+						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
+						C.append(e[len(e)-3+j]-1) 
 						if(i==j): 
-							Matrix.append(Aire_k/6.) #si c'est sur la diagonale
+							Matrix.append(k*k*(Aire_e/6.)) #si c'est sur la diagonale 
 						else: 
-							Matrix.append(Aire_k/12.) #autre
+							Matrix.append(k*k*(Aire_e/12.)) #autre
+	
+	################ 2nd partie : gestion de la matrice de masse sur le bord gamma infini = bord exterieur #####################
 
-		#La construction GLOBALE de la matrice de masse se fait grace au append en ajoutant au fur et à mesure les 
-		#élements avec append()
-		# On écrit avant de la mettre sous forme de matrice creuse
-		ecriture = Ecriture("Matrice_masse.csv")
-		ecriture.affichage("Ecriture_matrice")
-		ecriture.ecriture(Matrix)
+		#pour chaque triangle k
+		for e in self.Elements:
+			if(e[1]==1 and e[3]==1): #si c'est un segment et on est sur le bord exterieur
+				print("Points_interieur :", e[0])
+				p1 = e[len(e)-2] #on a que deux points 
+				p2 = e[len(e)-1]
+				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+				x1 = self.Nodes[p1-1] #sommet pour le triangle e 
+				x2 = self.Nodes[p2-1] 
+				det_e = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]))
+				Aire_e = 1./2.*det_e #Aire d'un triangle k
+
+				for i in range(0,3):  #on met 3 car c'est un triangle
+					for j in range(0,3):
+						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
+						C.append(e[len(e)-3+j]-1) 
+						if(i==j): 
+							Matrix.append(-np.complex(0,1)*k*Aire_e/6.) #si c'est sur la diagonale 
+						else: 
+							Matrix.append(-np.complex(0,1)*k*Aire_e/12.) #autre
+		
+	################ 3nd partie : gestion de la matrice de masse sur le bord gamma n = bord intérieur #####################
 
 		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
 		#La sommation sera automatiquement effectuée par Scipy.
 		
-		print(self.Nombre_Nodes)
-		Matrix = sparse.coo_matrix((Matrix),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) #pour former une matrice au format coo
+		#conversion en array
+		L = np.array(L)
+		C = np.array(C)
+		Matrix = sparse.coo_matrix((Matrix,(L,C)),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) #pour former une matrice au format coo
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
-		print("Nombre de lignes obtenues :", np.size(Matrix))
-		print("Nombre de lignes que l'on doit avoir dans la matrice de Masse : ", nombre_triangles*9)
-		#on obtient le meme nombre car commence à 0 dans la matrice donc ok
+		
+		tmp = Matrix.toarray()
+		moy_trace = np.mean(np.matrix.trace(Matrix.toarray()))
+
+		for e in self.Elements: 
+			if(e[1]==1 and e[3]==2): #bord intérieur
+				#sur toutes les lignes et colonnes on met 0 
+				tmp[e[0]-1,:] = 0 #on met la ligne à 0 
+				tmp[:,e[0]-1] = 0  #on met la colonne à 0
+				#sur la diagonale on met 1 
+				tmp[e[0]-1,e[0]-1] = moy_trace
+
+		Matrix = sparse.csr_matrix(tmp)
+
+		ecriture = Ecriture("Matrice_masse.csv")
+		ecriture.ecriture(Matrix.toarray()) #pour avoir un tableau numpy, la fonction dans écriture marche comme ça
+
 		return Matrix 
 
 	def calcul_matrice_rigidite(self): 
+		"""
+		Résolution de l'équation diffraction accoustique : - intégrale sur omega (grad u * grad v) + k^2 intégrale sur omega (u * v) - i*k* intégrale sur gamma infini (u*v)
+		Matrice de Rigidité = - intégrale sur omega (grad u * grad v)
+		Le cours nous donne la matrice pour la même équation : det_k/2 * (grad phi j)Transpose * (B_k_T*B_k)* (grad phi i)
+		"""
+
 		Matrix = []
+		L = []
+		C = []
+		Dphi = []
 		coef = 1./2.
 		nombre_triangles = 0
-		B_k = []
 
-		#pour chaque triangle k
-		for k in self.Elements:
-			if(k[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
-				p1 = k[len(k)-3] 
-				p2 = k[len(k)-2]
-				p3 = k[len(k)-1]
+		#gradient des fonctions de forme 
+		Dphi.append(np.matrix([[-1],[-1]])) #l'ajout des crochets permet de les créer en colonnes et pas en ligne
+		Dphi.append(np.matrix([[1],[0]]))
+		Dphi.append(np.matrix([[0],[1]])) 
+		Dphi = np.array(Dphi)
+		
+		for e in self.Elements:
+			if(e[1]==2): #si jamais on est sur un triangle et non un segment ou autre 
+				p1 = e[len(e)-3] 
+				p2 = e[len(e)-2]
+				p3 = e[len(e)-1]
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				x1 = self.Nodes[p1-1] 
 				x2 = self.Nodes[p2-1] 
 				x3 = self.Nodes[p3-1]
-				determinant_k = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2])) # x2[1] = y2
-				B_k = [[x3[2]-x1[2],x1[2]-x2[2]],[x1[1]-x3[1],x2[1]-x1[1]]]
-
-				#on multiplie B_k par 1/deteminant pour chacune de ses valeurs
-				for i in range(0,len(B_k)):
-					for j in range(0,len(B_k)):
-						B_k[i][j] = B_k[i][j] *(1./determinant_k)
+				det_e = (x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]) 
+				B_e = 1./(det_e)*np.matrix([[x3[2]-x1[2],x1[2]-x2[2]],[x1[1]-x3[1],x2[1]-x1[1]]])
+				B_e_T = B_e.getT()
 				
 				#contruction de la matrice en LOCAL
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
-						if(i==1 and j==1): 
-							Matrix.append(coef*2.) #si c'est sur la diagonale
-						if(i==j and i!=1 and j!=1): 
-							Matrix.append(coef*1.) #si c'est sur la diagonale
-						if(i==0 and j!=0): 
-							Matrix.append(coef*(-1.)) #si c'est sur la diagonale
-						if(j==0 and i!=0): 
-							Matrix.append(coef*(-1.)) #si c'est sur la diagonale
-						else: 
-							Matrix.append(0) #si c'est sur la diagonale
+						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
+						C.append(e[len(e)-3+j]-1) #pour acceder aux dernieres valeurs
+						Matrix.append(float(-det_e/2*Dphi[j].T*B_e_T*B_e*Dphi[i]))
 
-		Matrix = sparse.coo_matrix(Matrix,shape=(self.Nombre_Nodes,self.Nombre_Nodes))
+		#conversion en array
+		L = np.array(L)
+		C = np.array(C)
+		Matrix = np.array(Matrix)
+
+		#La construction GLOBALE de la matrice de masse se fait grace au append en ajoutant au fur et à mesure les 
+		#élements avec append()
+		Matrix = sparse.coo_matrix((Matrix,(L,C)),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) #pour former une matrice au format coo
 		Matrix = Matrix.tocsr()
+
+		ecriture = Ecriture("Matrice_rigidite.csv")
+		ecriture.ecriture(Matrix.toarray())
+
 		return Matrix
 
-	def calcul_membre_droite(self,methode):
-		second_membre = []
-		sigma = 2
-		#ici on considère les segments donc les bords
+	def calcul_membre_droite(self):
+		"""
+		gamma n = bord intérieur (e[3]==2)
+		gamma infini = bord extérieur (e[3]==1, en effet 1 = premier bord que l'on rencontre donc exterieur) 
+		Résolution de l'équation diffraction acoustique : integrale omega (f*v)
+		"""
+
+		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
+
+		#quadrature
 		for e in self.Elements: 
-			if(e[1]==1): #alors il s'agit d'un segment 
+			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
 				p1 = e[len(e)-2] #on a que deux points 
 				p2 = e[len(e)-1]
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
@@ -171,35 +239,71 @@ class Matrice:
 				s2 = self.Nodes[p2-1] 
 				#on va utiliser ici la méthode de Simpson car elle donne un degré de précision de 2
 				s12 = [(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
-				#sigma = norm(s1-s2), on utilise la distance euclidienne car c'est la plus courante 
-				sigma = np.sqrt((s1[0]-s2[0])**2+(s1[1]-s2[1])**2)
-				if(methode=="point_du_milieu"): 
-					pdm = self.g(s12)
-					pdm = np.abs(sigma)/6.
-					second_membre.append(pdm)
-				if(methode=="trapeze"): 
-					trapeze = (self.g(s1)+self.g(s2))
-					trapeze = np.abs(sigma)/2.
-					second_membre.append(trapeze)
-				if(methode=="simpson"): 
-					simpson = (self.g(s1)+4.*self.g(s12)+self.g(s2))
-					simpson = np.abs(sigma)/6.
-					second_membre.append(simpson)
+				sigma = np.sqrt((s2[1]-s1[1])*(s2[1]-s1[1]) + (s2[2]-s1[2])*(s2[2]-s1[2]))
+				tmp1 = (self.f(s1)+4.*self.f(s12))
+				tmp2 = (self.f(s2)+4.*self.f(s12))
+				simpson1 = (np.abs(sigma)/6.)*tmp1
+				simpson2 = (np.abs(sigma)/6.)*tmp2
+				second_membre[p1-1] += simpson1
+				second_membre[p2-1] += simpson2
 
-		if(methode=="point_du_milieu"): 		
-			ecriture = Ecriture("Second_membre_point_du_milieu.csv")
-			ecriture.affichage("ecriture_second_membre_point_du_milieu")
-			ecriture.ecriture(second_membre)
-		if(methode=="trapeze"): 		
-			ecriture = Ecriture("Second_membre_trapeze.csv")
-			ecriture.affichage("ecriture_second_membre_trapeze")
-			ecriture.ecriture(second_membre)
-		if(methode=="simpson"): 		
-			ecriture = Ecriture("Second_membre_simpson.csv")
-			ecriture.affichage("ecriture_second_membre_simpson")
-			ecriture.ecriture(second_membre)
-	
+		#pour mettre sous forme array 
+		second_membre = np.array(second_membre)
+		ecriture = Ecriture("Second_membre_avant_dirichlet.csv")
+		ecriture.ecriture(second_membre)
+		
 		return second_membre
 
-	def resolution_systeme(self,Masse,Rigidite,membre_droite): 
-		np.linalg.solve(Masse+Rigidite,membre_droite)
+	def A_dirichlet(self,Masse,Rigidite):  # A = M + D 
+		#il faut appliquer les conditions de dirichlet sur A (: u + u_inc)
+		A = (Masse+Rigidite).toarray()
+		ecriture = Ecriture("A_dirichlet.csv")
+		ecriture.ecriture(A)
+		return A
+
+	def second_membre_dirichlet(self):
+		"""
+		A considérer = -u_inc
+		"""  
+		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
+		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
+		#quadrature
+		for e in self.Elements: 
+			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
+				p1 = e[len(e)-2] #on a que deux points 
+				p2 = e[len(e)-1]
+				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
+				s2 = self.Nodes[p2-1] 
+				second_membre[p1-1] = -self.u_inc(s1)
+				second_membre[p2-1] = -self.u_inc(s2)
+				
+		#quadrature
+		for e in self.Elements: 
+			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
+				p1 = e[len(e)-2] #on a que deux points 
+				p2 = e[len(e)-1]
+				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
+				s2 = self.Nodes[p2-1] 
+				#on va utiliser ici la méthode de Simpson car elle donne un degré de précision de 2
+				s12 = [(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
+				sigma = np.sqrt((s2[1]-s1[1])*(s2[1]-s1[1]) + (s2[2]-s1[2])*(s2[2]-s1[2]))
+				tmp1 = (self.f(s1)+4.*self.f(s12))
+				tmp2 = (self.f(s2)+4.*self.f(s12))
+				simpson1 = (np.abs(sigma)/6.)*tmp1
+				simpson2 = (np.abs(sigma)/6.)*tmp2
+				second_membre[p1-1] += simpson1
+				second_membre[p2-1] += simpson2
+
+		#pour mettre sous forme array 
+		second_membre = np.array(second_membre)
+		ecriture = Ecriture("second_membre_dirichlet.csv")
+		ecriture.ecriture(second_membre)
+		return second_membre
+
+	def resolution_systeme(self,A,membre_droite_dirichlet): 
+		#toarray permet de mettre en deux dimensions
+		x = np.linalg.solve(A,membre_droite_dirichlet)
+		return x
+

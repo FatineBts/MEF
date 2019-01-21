@@ -21,6 +21,7 @@ class Creation_paraview:
 		self.Nombre_Elements = Nombre_Elements
 		M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
 		self.Nombre_Triangles = M.nombre_de_triangles() #on recupère le nombre de triangles
+		self.Resultat = Resultat
 
 	def script_paraview(self):
 		fichier = open('paraview.vtu','w') 
@@ -74,17 +75,17 @@ class Creation_paraview:
 
 		fichier.write('<DataArray type="Float64" Name="Real part" format="ascii">\n')
 		########## real part : ##########
-		#Explication : partie reelle des résultats obtenus par la fonction np.linalg.solve()
-		#for i in Resultat: 
-		#	fichier.write(str(np.real(i))+'\n')
+		#Explication : partie reelle des résultats obtenue par la fonction np.linalg.solve()
+		for i in self.Resultat:
+			fichier.write(str(np.real(i))+'\n')
 
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="Float64" Name="Imag part" format="ascii">\n')
 		########## im part : ############
-		#Explication : partie imaginaire des résultats obtenus par la fonction np.linalg.solve()
-		#for i in Resultat: 
-		#	fichier.write(str(np.imag(i))+'\n') 
+		#Explication : partie imaginaire des résultats obtenue par la fonction np.linalg.solve()
+		for i in self.Resultat: 
+			fichier.write(str(np.imag(i))+'\n') 
 
 		fichier.write('</DataArray>\n')
 		fichier.write('</PointData>\n')

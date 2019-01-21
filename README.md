@@ -8,6 +8,7 @@
   - scipy (https://www.scipy.org)
   - numpy (http://www.numpy.org)
   - math (https://docs.python.org/2/library/math.html)
+  - Cmath (https://docs.python.org/2/library/cmath.html)
   - os (https://docs.python.org/fr/2.7/library/os.html)
   
   Pour télécharger : 

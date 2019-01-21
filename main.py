@@ -15,73 +15,68 @@ import os
 import time 
 
 print("\n")
-print("Bonjour et bienvenue dans le projet de MEF réalisé par Fatine Bentires Alj et Alexia Zounias-Sirabella !!\n")
+print("Bonjour et bienvenue dans le projet de MEF réalisé par Fatine Bentires Alj et Alexia Zounias-Sirabella !! Tous les résultats se trouvent dans le dossier CSV. Les temps d'executions sont les suivants : \n")
+
 ########################## Appel de fonctions ########################
 
 fichier = "Maillage/sousmarin_simple.msh"
 lecture = Lecture(fichier)
-print("\n")
 
-lecture.affichage("lecture_fichier_msh")
 Nodes = []
 Elements = []
 Nombre_lignes, Nombre_Nodes, Nodes, Nombre_Elements, Elements = lecture.lecture_fichier_msh()
-print("\n")
 
+
+################### Etape 1 : calcul de M, D et b ##########################
 M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
 
-Matrice_de_Masse = []
-lecture.affichage("calcul_matrice_masse")
 start_time = time.time()
 Matrice_de_Masse = M.calcul_matrice_masse()
-print("\n")
-print("Vous trouverez les résultats dans le fichier Matrice_masse.csv !\n")
-print("Temps d exécution du calcul de la matrice de masse avec ecriture : %s secondes ---" % (time.time() - start_time))
-print("\n")
+print("Matrice de masse avant Dirichlet avec ecriture : %s secondes ---" % (time.time() - start_time))
 
-Matrice_de_Rigidite = []
-lecture.affichage("calcul_matrice_rigidite")
 start_time = time.time()
 Matrice_de_Rigidite = M.calcul_matrice_rigidite()
-print("\n")
-print("Vous trouverez les résultats dans le fichier Matrice_rigidite.csv !\n")
-print("Temps d exécution du calcul de la matrice de rigidite avec ecriture : %s secondes ---" % (time.time() - start_time))
-print("\n")
-
-Membre_de_droite = []
-
-lecture.affichage("calcul_membre_droite")
-start_time = time.time()
-Matrice_de_Droite = M.calcul_membre_droite("point_du_milieu")
-print("\n")
-print("Vous trouverez les résultats dans le fichier second_membre_point_du_milieu.csv !\n")
-print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
-print("\n")
+print("Matrice de rigidite avant Dirichlet avec ecriture : %s secondes ---" % (time.time() - start_time))
 
 start_time = time.time()
-Matrice_de_Droite = M.calcul_membre_droite("trapeze")
-print("\n")
-print("Vous trouverez les résultats dans le fichier second_membre_trapeze.csv !\n")
-print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
-print("\n")
+Membre_de_Droite_simpson = M.calcul_membre_droite()
+print("Membre de droite avant Dirichlet avec ecriture : %s secondes ---" % (time.time() - start_time))
+
+############### Etape 2 : application des conditions de Dirichlet à A et b #############################
 
 start_time = time.time()
-Matrice_de_Droite = M.calcul_membre_droite("simpson")
-print("\n")
-print("Vous trouverez les résultats dans le fichier second_membre_simpson.csv !\n")
-print("Temps d exécution du calcul de la matrice de rigidite avec ecriture: %s secondes ---" % (time.time() - start_time))
-print("\n")
+A_dirichlet = M.A_dirichlet(Matrice_de_Masse,Matrice_de_Rigidite)
+print("Matrice A (Masse+Rigidité) après Dirichlet avec ecriture : %s secondes ---" % (time.time() - start_time))
 
-#lecture.affichage("resolution_systeme")
-#Resultat = M.resolution_systeme(Matrice_de_Masse,Matrice_de_Rigidite,Matrice_de_Droite)
-#print("\n")
+start_time = time.time()
+b_dirichlet = M.second_membre_dirichlet()
+print("Membre de droite après Dirichlet avec ecriture : %s secondes ---" % (time.time() - start_time))
 
-lecture.affichage("creation vue Paraview")
-C = Creation_paraview(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements,0)
+############### Etape 3 : résolution du système ##################
+
+print("\n")
+print("Résolution du système en cours ...")
+Resultat = M.resolution_systeme(A_dirichlet,b_dirichlet)
+print("Système résolu !")
+
+############# Etape 4 : visualisation avec Paraview #############
+
+print("\n")
+C = Creation_paraview(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements,Resultat)
 C.script_paraview()
+print("Fichier Paraview disponible. Pour le visualiser, tapez paraview paraview.vtu sur le terminal : ")
 print("\n")
 
 #déplace les fichiers caches dans un dossier cache (fait automatiquement en Python3 mais on utilise Python2)
 os.system("mv Scripts/*.pyc Scripts/__pycache__")
 os.system("mv *.csv CSV")
 
+
+#########
+#Matrice de masse à revoir 
+#second membre après dirichlet à revoir
+#une fois que matrice de masse ok, A à vérifier
+#Appliquer dirichlet sur A
+#arranger le maillage 2 
+#vérifier Paraview
+###########
