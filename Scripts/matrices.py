@@ -52,7 +52,7 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
-		self.alpha = 0.9
+		self.alpha = 0.2
 	
 	def f(self,x):
 		return 0
@@ -117,26 +117,22 @@ class Matrice:
 		#pour chaque triangle k
 		for e in self.Elements:
 			if(e[1]==1 and e[3]==1): #si c'est un segment et on est sur le bord exterieur
-				print("Points_interieur :", e[0])
 				p1 = e[len(e)-2] #on a que deux points 
 				p2 = e[len(e)-1]
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				x1 = self.Nodes[p1-1] #sommet pour le triangle e 
 				x2 = self.Nodes[p2-1] 
-				det_e = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]))
-				Aire_e = 1./2.*det_e #Aire d'un triangle k
+				sigma_e = np.sqrt((x2[1]-x1[1])*(x2[1]-x1[1]) + (x2[2]-x1[2])*(x2[2]-x1[2]))
 
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
 						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
 						C.append(e[len(e)-3+j]-1) 
 						if(i==j): 
-							Matrix.append(-np.complex(0,1)*k*Aire_e/6.) #si c'est sur la diagonale 
+							Matrix.append(-np.complex(0,1)*k*sigma_e/6.) #si c'est sur la diagonale 
 						else: 
-							Matrix.append(-np.complex(0,1)*k*Aire_e/12.) #autre
+							Matrix.append(-np.complex(0,1)*k*sigma_e/12.) #autre
 		
-	################ 3nd partie : gestion de la matrice de masse sur le bord gamma n = bord intérieur #####################
-
 		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
 		#La sommation sera automatiquement effectuée par Scipy.
@@ -146,19 +142,6 @@ class Matrice:
 		C = np.array(C)
 		Matrix = sparse.coo_matrix((Matrix,(L,C)),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) #pour former une matrice au format coo
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
-		
-		tmp = Matrix.toarray()
-		moy_trace = np.mean(np.matrix.trace(Matrix.toarray()))
-
-		for e in self.Elements: 
-			if(e[1]==1 and e[3]==2): #bord intérieur
-				#sur toutes les lignes et colonnes on met 0 
-				tmp[e[0]-1,:] = 0 #on met la ligne à 0 
-				tmp[:,e[0]-1] = 0  #on met la colonne à 0
-				#sur la diagonale on met 1 
-				tmp[e[0]-1,e[0]-1] = moy_trace
-
-		Matrix = sparse.csr_matrix(tmp)
 
 		ecriture = Ecriture("Matrice_masse.csv")
 		ecriture.ecriture(Matrix.toarray()) #pour avoir un tableau numpy, la fonction dans écriture marche comme ça
@@ -257,8 +240,21 @@ class Matrice:
 	def A_dirichlet(self,Masse,Rigidite):  # A = M + D 
 		#il faut appliquer les conditions de dirichlet sur A (: u + u_inc)
 		A = (Masse+Rigidite).toarray()
+		
+		tmp = A
+		moy_trace = np.mean(np.matrix.trace(A))
+
+		for e in self.Elements: 
+			if(e[1]==1 and e[3]==2): #bord intérieur
+				#sur toutes les lignes et colonnes on met 0 
+				tmp[e[0]-1,:] = 0 #on met la ligne à 0 
+				tmp[:,e[0]-1] = 0  #on met la colonne à 0
+				#sur la diagonale on met 1 
+				tmp[e[0]-1,e[0]-1] = moy_trace
+
 		ecriture = Ecriture("A_dirichlet.csv")
 		ecriture.ecriture(A)
+
 		return A
 
 	def second_membre_dirichlet(self):
@@ -267,7 +263,8 @@ class Matrice:
 		"""  
 		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
 		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
-		#quadrature
+
+		"""
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
 				p1 = e[len(e)-2] #on a que deux points 
@@ -277,7 +274,8 @@ class Matrice:
 				s2 = self.Nodes[p2-1] 
 				second_membre[p1-1] = -self.u_inc(s1)
 				second_membre[p2-1] = -self.u_inc(s2)
-				
+		"""	
+		
 		#quadrature
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
@@ -287,12 +285,12 @@ class Matrice:
 				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
 				s2 = self.Nodes[p2-1] 
 				#on va utiliser ici la méthode de Simpson car elle donne un degré de précision de 2
-				s12 = [(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
+				s12 = [0,(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
 				sigma = np.sqrt((s2[1]-s1[1])*(s2[1]-s1[1]) + (s2[2]-s1[2])*(s2[2]-s1[2]))
-				tmp1 = (self.f(s1)+4.*self.f(s12))
-				tmp2 = (self.f(s2)+4.*self.f(s12))
-				simpson1 = (np.abs(sigma)/6.)*tmp1
-				simpson2 = (np.abs(sigma)/6.)*tmp2
+				tmp1 = (self.u_inc(s1)+4.*self.u_inc(s12))
+				tmp2 = (self.u_inc(s2)+4.*self.u_inc(s12))
+				simpson1 = -(np.abs(sigma)/6.)*tmp1
+				simpson2 = -(np.abs(sigma)/6.)*tmp2
 				second_membre[p1-1] += simpson1
 				second_membre[p2-1] += simpson2
 
