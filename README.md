@@ -10,6 +10,7 @@
   - math (https://docs.python.org/2/library/math.html)
   - Cmath (https://docs.python.org/2/library/cmath.html)
   - os (https://docs.python.org/fr/2.7/library/os.html)
+  - sys (https://docs.python.org/fr/3/library/sys.html)
   
   Pour télécharger : 
   - gmsh : http://gmsh.info
