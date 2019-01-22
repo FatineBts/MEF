@@ -211,16 +211,15 @@ class Matrice:
 
 		return Matrix
 
-
 	def A_dirichlet(self,Masse,Rigidite):  # A = M + D 
 		#il faut appliquer les conditions de dirichlet sur A (: u + u_inc)
 		A = (Masse+Rigidite).toarray()
-		
+
 		moy_trace = np.mean(np.matrix.trace(A))
 
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #bord intérieur
-				for i in range(0,2): 
+				for i in range(0,2):
 					#sur toutes les lignes et colonnes on met 0 
 					A[e[len(e)-2+i]-1,:] = 0 #on met la ligne à 0 
 					A[:,e[len(e)-2+i]-1] = 0  #on met la colonne à 0
@@ -229,7 +228,9 @@ class Matrice:
 
 		ecriture = Ecriture("A_dirichlet.csv")
 		ecriture.ecriture(A)
-
+		#print(Masse.shape)
+		#print(Rigidite.shape)
+		#print(A.shape)
 		return A
 
 	def calcul_membre_droite(self):
@@ -238,10 +239,6 @@ class Matrice:
 		"""  
 		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
 		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
-		wn = 1./6.
-		eps = 1./6.
-		eta = 1./6.
-		somme = 0
 		k=2*np.pi
 
 		#Dirichlet 
@@ -259,6 +256,7 @@ class Matrice:
 		second_membre = np.array(second_membre)
 		ecriture = Ecriture("calcul_membre_droite.csv")
 		ecriture.ecriture(second_membre)
+		#print(second_membre.shape)
 		return second_membre
 
 	def resolution_systeme(self,A,membre_droite_dirichlet): 
