@@ -2,7 +2,8 @@ Mesh.MshFileVersion = 2.2;
 
 N = 15; 
 pi = 3.14; 
-k = 2*pi; 
+k = 2*pi;
+k = k/2; //car on a pris R1 = 2 
 h = (2*pi)/(k*N);
 p1 = 0.55; 
 p2 = 0.40; 
