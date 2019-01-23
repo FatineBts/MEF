@@ -12,14 +12,15 @@ from Scripts.matrices import *
 from Scripts.creation_paraview import *
 import os
 # Pour le chronométrage
-import time 
+import time
+import sys 
 
 print("\n")
 print("Bonjour et bienvenue dans le projet de MEF réalisé par Fatine Bentires Alj et Alexia Zounias-Sirabella !! Tous les résultats se trouvent dans le dossier CSV. Les temps d'executions sont les suivants : \n")
 
 ########################## Appel de fonctions ########################
 
-fichier = "Maillage/sousmarin_simple.msh"
+fichier = "Maillage/" + str(sys.argv[1])
 lecture = Lecture(fichier)
 
 Nodes = []
