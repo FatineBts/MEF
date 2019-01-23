@@ -17,10 +17,11 @@
   - Paraview : https://www.paraview.org
 
   Comment lancer le projet : (exemple avec sousmarin_simple.geo)
-  1) gmsh Maillage/sousmarin_simple.geo -2 #pour produire le maillage 
-  2) mv sous_marinsimple.msh Maillage #si le fichier produit n'est pas dans le dossier Maillage
-  3) python main.py #pour lancer le projet 
-  4) paraview paraview.vtu #pour visualiser le résultat sous paraview
+  1) gmsh Maillage/sousmarin_simple.geo -2 #pour produire le maillage dans le dossier Maillage 
+  OU placer votre maillage directement dans le dossier Maillage si vous l'avez déjà
+  2) python main.py sousmarin_simple.msh #pour lancer le fichier sousmarin_simple.msh 
+  3) paraview paraview.vtu #pour visualiser le résultat sous paraview
+  OU ouvrir l'application paraview, charger le fichier puis appuyer sur apply
 
 
   Fichiers : 
