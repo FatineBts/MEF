@@ -21,6 +21,8 @@ print("Bonjour et bienvenue dans le projet de MEF réalisé par Fatine Bentires 
 ########################## Appel de fonctions ########################
 
 fichier = "Maillage/" + str(sys.argv[1])
+
+print ("Vous avez lancé le fichier " + str(fichier) + "\n")
 lecture = Lecture(fichier)
 
 Nodes = []
