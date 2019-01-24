@@ -52,7 +52,7 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
-		self.alpha = np.pi
+		self.alpha = 0.9
 	
 	def f(self,x):
 		return 0
@@ -129,9 +129,9 @@ class Matrice:
 						L.append(e[len(e)-2+i]-1) #pour acceder aux dernieres valeurs
 						C.append(e[len(e)-2+j]-1) 
 						if(i==j): 
-							Matrix.append(-1j*k*sigma_e/6.) #si c'est sur la diagonale 
+							Matrix.append(-1j*k*sigma_e/3.) #si c'est sur la diagonale 
 						else: 
-							Matrix.append(-1j*k*sigma_e/12.) #autre
+							Matrix.append(-1j*k*sigma_e/6.) #autre
 		
 		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
@@ -182,6 +182,7 @@ class Matrice:
 				x1 = self.Nodes[p1-1] 
 				x2 = self.Nodes[p2-1] 
 				x3 = self.Nodes[p3-1]
+
 				det_e = (x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]) 
 				B_e = 1./(det_e)*np.matrix([[x3[2]-x1[2],x1[2]-x2[2]],[x1[1]-x3[1],x2[1]-x1[1]]])
 				B_e_T = B_e.getT()
@@ -249,8 +250,8 @@ class Matrice:
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
 				s2 = self.Nodes[p2-1] 
-				second_membre[p1-1] = k*k*self.u_inc(s1)
-				second_membre[p2-1] = k*k*self.u_inc(s2)
+				second_membre[p1-1] = -k*k*self.u_inc(s1)
+				second_membre[p2-1] = -k*k*self.u_inc(s2)
 
 		#pour mettre sous forme array 
 		second_membre = np.array(second_membre)

@@ -72,11 +72,3 @@ os.system("mv Scripts/*.pyc Scripts/__pycache__")
 os.system("mv *.csv CSV")
 
 
-#########
-#Matrice de masse à revoir 
-#second membre après dirichlet à revoir
-#une fois que matrice de masse ok, A à vérifier
-#Appliquer dirichlet sur A
-#arranger le maillage 2 
-#vérifier Paraview
-###########
