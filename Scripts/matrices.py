@@ -53,13 +53,13 @@ class Matrice:
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
 		self.alpha = 0.9
-	
+		self.k = 2*np.pi
+
 	def f(self,x):
 		return 0
 
 	def u_inc(self,x):
-		k=2*np.pi
-		return exp(1j*k*(x[1]*np.cos(self.alpha)+x[2]*np.sin(self.alpha))) 
+		return exp(1j*self.k*(x[1]*np.cos(self.alpha)+x[2]*np.sin(self.alpha))) 
 
 	def nombre_de_triangles(self): 
 		nombre_triangles = 0
@@ -82,7 +82,6 @@ class Matrice:
 		L = []
 		C = []
 		nombre_triangles = 0
-		k = 2*np.pi
 
 		for e in self.Elements: #donne le nombre de triangles 
 			if(e[1]==2):
@@ -108,9 +107,9 @@ class Matrice:
 						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
 						C.append(e[len(e)-3+j]-1) 
 						if(i==j): 
-							Matrix.append(k*k*(Aire_e/6.)) #si c'est sur la diagonale 
+							Matrix.append(self.k*self.k*(Aire_e/6.)) #si c'est sur la diagonale 
 						else: 
-							Matrix.append(k*k*(Aire_e/12.)) #autre
+							Matrix.append(self.k*self.k*(Aire_e/12.)) #autre
 			
 	################ 2nd partie : gestion de la matrice de masse sur le bord gamma infini = bord exterieur #####################
 
@@ -129,9 +128,9 @@ class Matrice:
 						L.append(e[len(e)-2+i]-1) #pour acceder aux dernieres valeurs
 						C.append(e[len(e)-2+j]-1) 
 						if(i==j): 
-							Matrix.append(-1j*k*sigma_e/3.) #si c'est sur la diagonale 
+							Matrix.append(-1j*self.k*sigma_e/3.) #si c'est sur la diagonale 
 						else: 
-							Matrix.append(-1j*k*sigma_e/6.) #autre
+							Matrix.append(-1j*self.k*sigma_e/6.) #autre
 		
 		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
 		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
@@ -240,7 +239,6 @@ class Matrice:
 		"""  
 		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
 		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
-		k=2*np.pi
 
 		#Dirichlet 
 		for e in self.Elements: 
@@ -250,8 +248,8 @@ class Matrice:
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
 				s2 = self.Nodes[p2-1] 
-				second_membre[p1-1] = -k*k*self.u_inc(s1)
-				second_membre[p2-1] = -k*k*self.u_inc(s2)
+				second_membre[p1-1] = -self.u_inc(s1)
+				second_membre[p2-1] = -self.u_inc(s2)
 
 		#pour mettre sous forme array 
 		second_membre = np.array(second_membre)
