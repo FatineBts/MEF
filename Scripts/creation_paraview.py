@@ -59,7 +59,7 @@ class Creation_paraview:
 
 		#pour les segments
 		for k in self.Elements: 
-			if(k[1]==1): #triangles
+			if(k[1]==1): #segments
 				fichier.write(str(k[len(k)-2]) + ' ')
 				fichier.write(str(k[len(k)-1]) + ' ')
 				fichier.write('\n')
@@ -70,7 +70,6 @@ class Creation_paraview:
 		######## offsets : Récupération de la fin de position de chaque triangle dans la partie connectivity###########
 		#Explication : on fait des pas de 3 car on a ajouté 3 éléments dans la partie connectivity
 		pas = 0
-
 		for k in range(self.Nombre_Triangles): 
 			fichier.write(str(pas+3) + '\n') 
 			pas+=3
@@ -79,6 +78,7 @@ class Creation_paraview:
 		for k in range(self.Nombre_Segments): 
 			fichier.write(str(pas+2) + '\n') 
 			pas+=2
+
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="UInt8" Name="types">\n') 

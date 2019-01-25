@@ -52,7 +52,7 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = int(Nombre_Elements)
-		self.alpha = 0.15
+		self.alpha = np.pi
 		self.k = 2*np.pi
 
 	def f(self,x):
@@ -216,7 +216,7 @@ class Matrice:
 				for i in range(0,2):
 					#sur toutes les lignes et colonnes on met 0 
 					A[e[len(e)-3+i]-1,:] = 0 #on met la ligne à 0 
-					A[:,e[len(e)-3+i]-1] = 0  #on met la colonne à 0
+					#A[:,e[len(e)-3+i]-1] = 0  #on met la colonne à 0
 					#sur la diagonale on met 1 
 					A[e[len(e)-3+i]-1,e[len(e)-3+i]-1] = 1
 
@@ -255,7 +255,7 @@ class Matrice:
 	def resolution_systeme(self,A,membre_droite): 
 		#toarray permet de mettre en deux dimensions
 		x = np.linalg.solve(A,membre_droite)
-		
+
 		ecriture = Ecriture("resolution_systeme.csv")
 		ecriture.ecriture(x)
 		return x
