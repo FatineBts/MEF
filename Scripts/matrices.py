@@ -52,7 +52,7 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
-		self.alpha = np.pi
+		self.alpha = np.pi/2
 		self.k = 2*np.pi
 
 	def f(self,x):
@@ -225,8 +225,6 @@ class Matrice:
 					A[:,e[len(e)-3+i]-1] = 0  #on met la colonne à 0
 					#sur la diagonale on met 1 
 					A[e[len(e)-3+i]-1,e[len(e)-3+i]-1] = 1
-					#print("e",e)
-					#print("truc",e[len(e)-3+i])
 
 		ecriture = Ecriture("A_dirichlet.csv")
 		ecriture.ecriture(A)
@@ -243,7 +241,6 @@ class Matrice:
 		#Dirichlet 
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
-				print(e)
 				p1 = e[len(e)-3] #on a que deux points 
 				p2 = e[len(e)-2]
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
