@@ -53,7 +53,7 @@ class Matrice:
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
 		self.alpha = 0.9
-		self.k = 2*np.pi
+		self.k = np.pi
 
 	def f(self,x):
 		return 0
