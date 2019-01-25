@@ -64,7 +64,7 @@ print("Système résolu !")
 print("\n")
 C = Creation_paraview(Nombre_lignes, Nombre_Nodes, Nodes, Nombre_Elements, Elements,Resultat)
 C.script_paraview()
-print("Fichier Paraview disponible. Pour le visualiser, tapez paraview paraview.vtu sur le terminal : ")
+print("Fichier Paraview disponible. Pour le visualiser, tapez paraview paraview.vtu sur le terminal")
 print("\n")
 
 #déplace les fichiers caches dans un dossier cache (fait automatiquement en Python3 mais on utilise Python2)

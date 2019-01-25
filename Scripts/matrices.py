@@ -47,19 +47,19 @@ Et boum, ça me génére le maillage, résout le problème, et me l’affiche. B
 
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
-		self.Nombre_lignes = Nombre_lignes 
+		self.Nombre_lignes = int(Nombre_lignes) 
 		self.Nombre_Nodes = int(Nombre_Nodes)
 		self.Nodes = Nodes
 		self.Elements = Elements
-		self.Nombre_Elements = Nombre_Elements
-		self.alpha = np.pi/2
+		self.Nombre_Elements = int(Nombre_Elements)
+		self.alpha = 0.15
 		self.k = 2*np.pi
 
 	def f(self,x):
 		return 0
 
 	def u_inc(self,x):
-		return exp(1j*self.k*(x[1]*np.cos(self.alpha)+x[2]*np.sin(self.alpha))) 
+		return exp( 1j*self.k* (x[1]*np.cos(self.alpha) + x[2]*np.sin(self.alpha)) ) 
 
 	def nombre_de_triangles(self): 
 		nombre_triangles = 0
@@ -146,10 +146,6 @@ class Matrice:
 		ecriture = Ecriture("Matrice_masse.csv")
 		ecriture.ecriture(Matrix.toarray()) #pour avoir un tableau numpy, la fonction dans écriture marche comme ça
 
-		#U = np.ones((self.Nombre_Nodes,1))
-		#test =Matrix.dot(U)
-		#print('test M :',test)
-
 		return Matrix 
 
 	def calcul_matrice_rigidite(self): 
@@ -163,8 +159,6 @@ class Matrice:
 		L = []
 		C = []
 		Dphi = []
-		coef = 1./2.
-		nombre_triangles = 0
 
 		#gradient des fonctions de forme 
 		Dphi.append(np.matrix([[-1],[-1]])) #l'ajout des crochets permet de les créer en colonnes et pas en ligne
@@ -241,8 +235,9 @@ class Matrice:
 		#Dirichlet 
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
-				p1 = e[len(e)-3] #on a que deux points 
-				p2 = e[len(e)-2]
+				p1 = e[len(e)-2] #on a que deux points 
+				p2 = e[len(e)-1]
+
 				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
 				s2 = self.Nodes[p2-1] 
@@ -254,12 +249,13 @@ class Matrice:
 		second_membre = np.array(second_membre)
 		ecriture = Ecriture("calcul_membre_droite.csv")
 		ecriture.ecriture(second_membre)
-		#print(second_membre.shape)
+
 		return second_membre
 
 	def resolution_systeme(self,A,membre_droite): 
 		#toarray permet de mettre en deux dimensions
 		x = np.linalg.solve(A,membre_droite)
+		
 		ecriture = Ecriture("resolution_systeme.csv")
 		ecriture.ecriture(x)
 		return x

@@ -14,13 +14,16 @@ from matrices import *
 
 class Creation_paraview: 
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements,Resultat):
+		M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
+
 		self.Nombre_lignes = Nombre_lignes 
 		self.Nombre_Nodes = Nombre_Nodes
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = Nombre_Elements
-		M = Matrice(Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements, Elements)
 		self.Nombre_Triangles = M.nombre_de_triangles() #on recupère le nombre de triangles
+		self.Nombre_Segments = self.Nombre_Elements - self.Nombre_Triangles
+
 		self.Resultat = Resultat
 
 	def script_paraview(self):
@@ -45,14 +48,22 @@ class Creation_paraview:
 		fichier.write('<DataArray type="Int32" Name="connectivity">\n') 
 		######## connectivity : Pour chaque triangle on prend les numéro des points qui constituent le triangle #############
 		#Explication : pour chaque triangle uniquement (pas de segments) on récupère les numéro GLOBAUX des sommets
-		toto = 0
-		toto2 = 0
+
+		#pour les triangles 
 		for k in self.Elements: 
-				if(k[1]==2): #triangles
-					fichier.write(str(k[len(k)-3]) + ' ') 
-					fichier.write(str(k[len(k)-2]) + ' ')
-					fichier.write(str(k[len(k)-1]) + ' ')
-					fichier.write('\n')
+			if(k[1]==2): #triangles
+				fichier.write(str(k[len(k)-3]) + ' ') 
+				fichier.write(str(k[len(k)-2]) + ' ')
+				fichier.write(str(k[len(k)-1]) + ' ')
+				fichier.write('\n')
+
+		#pour les segments
+		for k in self.Elements: 
+			if(k[1]==1): #triangles
+				fichier.write(str(k[len(k)-2]) + ' ')
+				fichier.write(str(k[len(k)-1]) + ' ')
+				fichier.write('\n')
+
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="Int32" Name="offsets">\n') 
@@ -61,17 +72,26 @@ class Creation_paraview:
 		pas = 0
 
 		for k in range(self.Nombre_Triangles): 
-				fichier.write(str(pas+3) + '\n') 
-				pas+=3
+			fichier.write(str(pas+3) + '\n') 
+			pas+=3
+
+		pas = 0
+		for k in range(self.Nombre_Segments): 
+			fichier.write(str(pas+2) + '\n') 
+			pas+=2
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="UInt8" Name="types">\n') 
 		########### types : On met les types des éléments ####################
 		#Explication : Pour des triangles le type est 5
 		for k in self.Elements:
-				if(k[1]==2): 
-					fichier.write(str(5) + ' ' + '\n')
+			if(k[1]==2): 
+				fichier.write(str(2) + ' ' + '\n')
 		
+		for k in self.Elements:
+			if(k[1]==1): 
+				fichier.write(str(1) + ' ' + '\n')
+
 		fichier.write('</DataArray>\n')
 		fichier.write('</Cells>\n')
 		fichier.write('<PointData Scalars="solution">\n')
