@@ -23,17 +23,13 @@
   3) paraview paraview.vtu #pour visualiser le résultat sous paraview
   OU ouvrir l'application paraview, charger le fichier puis appuyer sur apply
 
-
-  Fichiers : 
+  Fichiers/Dossiers :
   - Fichier main.py : fichier qui va lancer tous les autres 
-  
-  Dossier Maillage : 
-  - sousmarin_simple.geo : donne la représentation d'un sous-marin simplifié, visualisable avec gmsh
-  - sousmarin_simple.msh : maillage du fichier précédent 
-  
-  Dossier Script : contient les fichiers Python
-  
-  Dossier CSV : contient les fichiers csv correspondants aux matrices et au second membre 
+  - Fichier Maillage/sousmarin_simple.geo : donne la représentation d'un sous-marin simplifié, visualisable avec gmsh
+  - Fichier Maillage/sousmarin_simple.msh : maillage du fichier précédent 
+  - Dossier Script : contient les fichiers Python
+  - Dossier CSV : contient les fichiers csv correspondants aux matrices et au second membre 
+  - Dossier Images : contient des visualisations du résultat 
   
   Résultat obtenu avec un nombre d'onde k : 20 et alpha : 0
 
