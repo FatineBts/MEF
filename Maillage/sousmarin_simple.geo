@@ -1,9 +1,9 @@
 Mesh.MshFileVersion = 2.2;
 
 R = 1;
-N = 15; 
-k = 2*pi; 
-h = (2*pi)/(k*N);
+N = 10; 
+k = 2*Pi; 
+h = 2*Pi/(k*N);
 xc = 0;
 yc = 0;
 xc2 = 0;
