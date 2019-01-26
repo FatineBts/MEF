@@ -52,16 +52,16 @@ class Creation_paraview:
 		#pour les triangles 
 		for k in self.Elements: 
 			if(k[1]==2): #triangles
-				fichier.write(str(k[len(k)-3]) + ' ') 
-				fichier.write(str(k[len(k)-2]) + ' ')
-				fichier.write(str(k[len(k)-1]) + ' ')
+				fichier.write(str(k[len(k)-3]-1) + ' ') 
+				fichier.write(str(k[len(k)-2]-1) + ' ')
+				fichier.write(str(k[len(k)-1]-1) + ' ')
 				fichier.write('\n')
 
 		#pour les segments
 		for k in self.Elements: 
 			if(k[1]==1): #segments
-				fichier.write(str(k[len(k)-2]) + ' ')
-				fichier.write(str(k[len(k)-1]) + ' ')
+				fichier.write(str(k[len(k)-2]-1) + ' ')
+				fichier.write(str(k[len(k)-1]-1) + ' ')
 				fichier.write('\n')
 
 		fichier.write('</DataArray>\n')
@@ -69,6 +69,7 @@ class Creation_paraview:
 		fichier.write('<DataArray type="Int32" Name="offsets">\n') 
 		######## offsets : Récupération de la fin de position de chaque triangle dans la partie connectivity###########
 		#Explication : on fait des pas de 3 car on a ajouté 3 éléments dans la partie connectivity
+		
 		pas = 0
 		for k in range(self.Nombre_Triangles): 
 			fichier.write(str(pas+3) + '\n') 
@@ -84,13 +85,15 @@ class Creation_paraview:
 		fichier.write('<DataArray type="UInt8" Name="types">\n') 
 		########### types : On met les types des éléments ####################
 		#Explication : Pour des triangles le type est 5
+
 		for k in self.Elements:
-			if(k[1]==2): 
-				fichier.write(str(2) + ' ' + '\n')
-		
+			if(k[1]==2): #triangle
+				fichier.write(str(5) + ' ' + '\n')
+
 		for k in self.Elements:
 			if(k[1]==1): 
-				fichier.write(str(1) + ' ' + '\n')
+				fichier.write(str(3) + ' ' + '\n')
+
 
 		fichier.write('</DataArray>\n')
 		fichier.write('</Cells>\n')

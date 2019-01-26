@@ -15,36 +15,6 @@ import array as arr
 import numpy
 from cmath import * #pour les nombres complexes
 
-"""
-Simulations numériques
-1. Augmentez le nombre d’onde k. Attention, n’oubliez pas que le maillage doit lui aussi devenir de plus en plus fin. Quel est le nombre d’onde maximal que vous avez pu faire tourner ?
-2. Ondes de Herglotz : plutôt qu’une seule onde plane, prenez comme onde incidente une somme d’ondes planes avec un poids particuliers pour chacune d’elles. Ce type d’onde est appelée Onde de Herglotz
-
-Analyse du code
-1. Profiling de code : quelle opération prend le plus de temps CPU ? De mémoire ?
-2. Vitesse du programme en fonction du nombre d’inconnues
-3. Analyse de l’erreur en norme L2
-4. Pourquoi avez-vous fait tel ou tel choix ?
-
-Améliorations
-1. Que pourrions nous modifier pour accélérer le code ?
-2. Que faudrait il modifier pour faire du P2 ? P3 ?
-
-Astuces 
-1. Apportez des résultats de simulation complets avec vous : image du résultat, paramètres utilisés
-2. Soyez active/actif : “j’ai fait ci en utilisant ça, regardez comme je suis un boss”
-3. Préparez un (voire des) exemple(s) ready-to-use : je n’aurais qu’à faire (par exemple) :
-gmsh example.geo -2    # Génération du maillage
-python example.py      # Résolution
-paraview example.vtu   # Affichage
-
-Et boum, ça me génére le maillage, résout le problème, et me l’affiche. Bien entendu, dans ce cas, il faut que le problème soit rapide à résoudre. Si ma machine tombe en rade, ça va probablement me déplaire…
-
-4. N’oubliez pas le fichier README ! Il devrait par exemple m’expliquer comment lancer un exemple simple !
-5. Préparez plusieurs exemples tout prêt, qui peuvent être (pas obligé !) rangés dans des dossiers. Le jour J, vous ne disposez que de 10 minutes pour me présenter votre travail. Rappelez-vous que je ne peux juger votre travail que sur ce que vous me montrez…
-6. Last but not least: versionnez vos codes avec git!
-"""
-
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
 		self.Nombre_lignes = int(Nombre_lignes) 
@@ -209,14 +179,11 @@ class Matrice:
 		#il faut appliquer les conditions de dirichlet sur A (: u + u_inc)
 		A = (Masse+Rigidite).toarray()
 
-		moy_trace = np.mean(np.matrix.trace(A))
-
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #bord intérieur
 				for i in range(0,2):
 					#sur toutes les lignes et colonnes on met 0 
 					A[e[len(e)-3+i]-1,:] = 0 #on met la ligne à 0 
-					#A[:,e[len(e)-3+i]-1] = 0  #on met la colonne à 0
 					#sur la diagonale on met 1 
 					A[e[len(e)-3+i]-1,e[len(e)-3+i]-1] = 1
 
