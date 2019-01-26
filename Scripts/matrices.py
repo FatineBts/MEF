@@ -222,19 +222,16 @@ class Matrice:
 	def resolution_systeme(self,A,membre_droite): 
 		#toarray permet de mettre en deux dimensions
 		x = np.linalg.solve(A,membre_droite)
+		j = 1
+		for i in range(self.Nombre_Nodes): 
+			point = self.Nodes[i]
+			x1 = point[1]
+			x2 = point[2]
+			x3 = point[3]
+			array = [0,x1,x2]
 
-		for i  in range(0,self.Nombre_Nodes):
-			#point
-			p = self.Nodes[i-1]
-			#coordonnées du point
-			x1 = p[len(p)-3] 
-			x2 = p[len(p)-2] 
-			x3 = p[len(p)-1]
+			x[i] = np.abs(x[i]+self.u_inc(array))
 
-			array = [0,x1,x2] #on met 0 avant car la fonction u_inc est faite de telle sortie que l'on prend x[1] et x[2] donc il 
-			#faut 3 éléments
-			x[i]=np.abs(x[i]+self.u_inc(array))
-			
 		ecriture = Ecriture("resolution_systeme.csv")
 		ecriture.ecriture(x)
 		return x
