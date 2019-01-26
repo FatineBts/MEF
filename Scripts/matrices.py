@@ -199,6 +199,21 @@ class Matrice:
 		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
 		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
 
+		for e in self.Elements: 
+			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
+				p1 = e[len(e)-2] #on a que deux points 
+				p2 = e[len(e)-1]
+				s1 = self.Nodes[p1-1]
+				s2 = self.Nodes[p2-1]
+				s12 = [0,(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
+				sigma = np.sqrt((s2[1]-s1[1])*(s2[1]-s1[1]) + (s2[2]-s1[2])*(s2[2]-s1[2]))		
+				tmp1 = (self.f(s1)+4.*self.f(s12))
+				tmp2 = (self.f(s2)+4.*self.f(s12))
+				simpson1 = -(np.abs(sigma)/6.)*tmp1
+				simpson2 = -(np.abs(sigma)/6.)*tmp2
+				second_membre[p1-1] += simpson1
+				second_membre[p2-1] += simpson2
+		
 		#Dirichlet 
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
