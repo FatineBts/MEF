@@ -22,8 +22,8 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = int(Nombre_Elements)
-		self.alpha = 0 #énoncé
-		self.k = 20#2*np.pi
+		self.alpha = np.pi #énoncé
+		self.k = 2*np.pi
 
 	def f(self,x):
 		return 0
@@ -199,21 +199,6 @@ class Matrice:
 		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
 		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
 
-		for e in self.Elements: 
-			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
-				p1 = e[len(e)-2] #on a que deux points 
-				p2 = e[len(e)-1]
-				s1 = self.Nodes[p1-1]
-				s2 = self.Nodes[p2-1]
-				s12 = [0,(s1[1]+s2[1])/2.,(s1[2]+s2[2])/2.] #pas vraiment besoin de la 3ème dimension car vaut 0
-				sigma = np.sqrt((s2[1]-s1[1])*(s2[1]-s1[1]) + (s2[2]-s1[2])*(s2[2]-s1[2]))		
-				tmp1 = (self.f(s1)+4.*self.f(s12))
-				tmp2 = (self.f(s2)+4.*self.f(s12))
-				simpson1 = (np.abs(sigma)/6.)*tmp1
-				simpson2 = (np.abs(sigma)/6.)*tmp2
-				second_membre[p1-1] += simpson1
-				second_membre[p2-1] += simpson2
-		
 		#Dirichlet 
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
@@ -234,15 +219,6 @@ class Matrice:
 
 		return second_membre
 
-	def resolution_systeme_sans_u_inc(self,A,membre_droite): 
-		#toarray permet de mettre en deux dimensions
-		x = np.linalg.solve(A,membre_droite)
-
-		ecriture = Ecriture("resolution_systeme_sans_u_inc.csv")
-		ecriture.ecriture(x)
-		return x		
-
-
 	def resolution_systeme(self,A,membre_droite): 
 		#toarray permet de mettre en deux dimensions
 		x = np.linalg.solve(A,membre_droite)
@@ -258,7 +234,7 @@ class Matrice:
 			array = [0,x1,x2] #on met 0 avant car la fonction u_inc est faite de telle sortie que l'on prend x[1] et x[2] donc il 
 			#faut 3 éléments
 			x[i]=np.abs(x[i]+self.u_inc(array))
-
+			
 		ecriture = Ecriture("resolution_systeme.csv")
 		ecriture.ecriture(x)
 		return x
