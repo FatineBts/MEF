@@ -22,7 +22,7 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = int(Nombre_Elements)
-		self.alpha = np.pi
+		self.alpha = 0 #énoncé
 		self.k = 2*np.pi
 
 	def f(self,x):
@@ -182,8 +182,8 @@ class Matrice:
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #bord intérieur
 				for i in range(0,2):
-					#sur toutes les lignes et colonnes on met 0 
-					A[e[len(e)-3+i]-1,:] = 0 #on met la ligne à 0 
+					#sur toutes les lignes 0 
+					A[e[len(e)-3+i]-1,:] = 0 
 					#sur la diagonale on met 1 
 					A[e[len(e)-3+i]-1,e[len(e)-3+i]-1] = 1
 
@@ -209,8 +209,8 @@ class Matrice:
 				sigma = np.sqrt((s2[1]-s1[1])*(s2[1]-s1[1]) + (s2[2]-s1[2])*(s2[2]-s1[2]))		
 				tmp1 = (self.f(s1)+4.*self.f(s12))
 				tmp2 = (self.f(s2)+4.*self.f(s12))
-				simpson1 = -(np.abs(sigma)/6.)*tmp1
-				simpson2 = -(np.abs(sigma)/6.)*tmp2
+				simpson1 = (np.abs(sigma)/6.)*tmp1
+				simpson2 = (np.abs(sigma)/6.)*tmp2
 				second_membre[p1-1] += simpson1
 				second_membre[p2-1] += simpson2
 		
