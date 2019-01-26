@@ -28,7 +28,7 @@
   - Fichier Maillage/sousmarin_simple.geo : donne la représentation d'un sous-marin simplifié, visualisable avec gmsh
   - Fichier Maillage/sousmarin_simple.msh : maillage du fichier précédent 
   - Dossier Script : contient les fichiers Python
-  - Dossier CSV : contient les fichiers csv correspondants aux matrices et au second membre 
+  - Dossier CSV : contient les fichiers csv des différentes fonctions 
   - Dossier Images : contient des visualisations du résultat 
   
   Résultat obtenu avec un nombre d'onde k : 20 et alpha : 0
