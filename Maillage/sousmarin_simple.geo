@@ -2,7 +2,7 @@ Mesh.MshFileVersion = 2.2;
 
 R = 1;
 N = 10; 
-k = 2*Pi; 
+k = 20; //2*Pi; 
 h = 2*Pi/(k*N);
 xc = 0;
 yc = 0;

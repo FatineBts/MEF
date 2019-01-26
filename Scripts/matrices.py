@@ -22,8 +22,8 @@ class Matrice:
 		self.Nodes = Nodes
 		self.Elements = Elements
 		self.Nombre_Elements = int(Nombre_Elements)
-		self.alpha = np.pi #énoncé
-		self.k = 2*np.pi
+		self.alpha = 0 #énoncé
+		self.k = 20
 
 	def f(self,x):
 		return 0
