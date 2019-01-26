@@ -36,3 +36,5 @@
   Dossier CSV : contient les fichiers csv correspondants aux matrices et au second membre 
   
   Résultat obtenu avec un nombre d'onde k : 20 et alpha : 0
+
+![apres_u_uinc_resolution_k_20](https://user-images.githubusercontent.com/23095219/51789632-194a9600-218b-11e9-9f2b-9f411ee0446a.png)
