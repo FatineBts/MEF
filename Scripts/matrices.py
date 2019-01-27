@@ -71,7 +71,7 @@ class Matrice:
 				#Calcul de l'aire = 1/2 du det pour chaque triangle 
 				det_e = np.abs((x2[1]-x1[1])*(x3[2]-x1[2]) - (x3[1]-x1[1])*(x2[2]-x1[2]))
 				Aire_e = 1./2.*det_e #Aire d'un triangle k
-				#contruction de la matrice en LOCAL
+
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
 						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
@@ -83,7 +83,6 @@ class Matrice:
 			
 	################ 2nd partie : gestion de la matrice de masse sur le bord gamma infini = bord exterieur #####################
 
-		#pour chaque triangle k
 		for e in self.Elements:
 			if(e[1]==1 and e[3]==1): #si c'est un segment et on est sur le bord exterieur
 				p1 = e[len(e)-2] #on a que deux points 
@@ -100,11 +99,7 @@ class Matrice:
 						if(i==j): 
 							Matrix.append(-1j*self.k*sigma_e/3.) #si c'est sur la diagonale 
 						else: 
-							Matrix.append(-1j*self.k*sigma_e/6.) #autre
-		
-		#Pour pouvoir utiliser Scipy et ses matrices creuses (sparse matrices en anglais), nous devons utiliser Python2 (et non Python3). 
-		#Le plus pratique pour construire la matrice du système au format CSR est certainement de créer une matrice au format COO (coo_matrix) en ajoutant chaque contribution élémentaire à la suite (sans les sommer) puis de convertir la matrice au format CSR à l’aide de tocsr. 
-		#La sommation sera automatiquement effectuée par Scipy.
+							Matrix.append(-1j*self.k*sigma_e/6.) #autre	
 
 		#conversion en array
 		L = np.array(L)
@@ -114,7 +109,7 @@ class Matrice:
 		Matrix = Matrix.tocsr() #retourne une matrice en forme de ligne (manière condensée)
 
 		ecriture = Ecriture("Matrice_masse.csv")
-		ecriture.ecriture(Matrix.toarray()) #pour avoir un tableau numpy, la fonction dans écriture marche comme ça
+		ecriture.ecriture(Matrix.toarray()) 
 
 		return Matrix 
 
@@ -141,7 +136,7 @@ class Matrice:
 				p1 = e[len(e)-3] 
 				p2 = e[len(e)-2]
 				p3 = e[len(e)-1]
-				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
+
 				x1 = self.Nodes[p1-1] 
 				x2 = self.Nodes[p2-1] 
 				x3 = self.Nodes[p3-1]
@@ -150,7 +145,6 @@ class Matrice:
 				B_e = 1./(det_e)*np.matrix([[x3[2]-x1[2],x1[2]-x2[2]],[x1[1]-x3[1],x2[1]-x1[1]]])
 				B_e_T = B_e.getT()
 				
-				#contruction de la matrice en LOCAL
 				for i in range(0,3):  #on met 3 car c'est un triangle
 					for j in range(0,3):
 						L.append(e[len(e)-3+i]-1) #pour acceder aux dernieres valeurs
@@ -162,13 +156,8 @@ class Matrice:
 		C = np.array(C)
 		Matrix = np.array(Matrix)
 
-		#La construction GLOBALE de la matrice de masse se fait grace au append en ajoutant au fur et à mesure les 
-		#élements avec append()
-		Matrix = sparse.coo_matrix((Matrix,(L,C)),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) #pour former une matrice au format coo
+		Matrix = sparse.coo_matrix((Matrix,(L,C)),shape=(self.Nombre_Nodes,self.Nombre_Nodes)) 
 		Matrix = Matrix.tocsr()
-
-		#U = np.ones(self.Nombre_Nodes)
-		#print('test D :',Matrix.dot(U))
 
 		ecriture = Ecriture("Matrice_rigidite.csv")
 		ecriture.ecriture(Matrix.toarray())
@@ -176,7 +165,7 @@ class Matrice:
 		return Matrix
 
 	def A_dirichlet(self,Masse,Rigidite):  # A = M + D 
-		#il faut appliquer les conditions de dirichlet sur A (: u + u_inc)
+		#il faut appliquer les conditions de dirichlet sur A 
 		A = (Masse+Rigidite).toarray()
 
 		for e in self.Elements: 
@@ -194,18 +183,17 @@ class Matrice:
 
 	def calcul_membre_droite(self):
 		"""
-		A considérer = -u_inc
+		Dirichlet. A considérer = u = -u_inc
 		"""  
 		#il faut appliquer les conditions de dirichlet sur b (: u + u_inc)
 		second_membre = [0]*self.Nombre_Nodes #pour mettre à la bonne taille		
 
-		#Dirichlet 
+		#Dirichlet : segment 
 		for e in self.Elements: 
 			if(e[1]==1 and e[3]==2): #alors il s'agit d'un segment et on est sur le bord intérieur
 				p1 = e[len(e)-2] #on a que deux points 
 				p2 = e[len(e)-1]
 
-				#liste des coordonnées pour chaque point (pas z car on est en 2 D)
 				s1 = self.Nodes[p1-1] #sommet pour le triangle e 
 				s2 = self.Nodes[p2-1] 
 
@@ -220,7 +208,7 @@ class Matrice:
 		return second_membre
 
 	def resolution_systeme(self,A,membre_droite): 
-		#toarray permet de mettre en deux dimensions
+
 		x = np.linalg.solve(A,membre_droite)
 		j = 1
 		for i in range(self.Nombre_Nodes): 
@@ -230,7 +218,7 @@ class Matrice:
 			x3 = point[3]
 			array = [0,x1,x2]
 
-			x[i] = np.abs(x[i]+self.u_inc(array))
+			x[i] = np.abs(x[i]+self.u_inc(array)) #car on veut observer u + u_inc et uniquement la partie réelle
 
 		ecriture = Ecriture("resolution_systeme.csv")
 		ecriture.ecriture(x)

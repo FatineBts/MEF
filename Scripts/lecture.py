@@ -28,8 +28,6 @@ class Lecture:
 		for i in l: #donne le nombre de lignes du fichier 
 			Nombre_lignes += 1
 		
-		#print "Le fichier comporte " + str(Nombre_lignes) + " lignes."
-
 		for i in range(0,Nombre_lignes):
 			if(l[i]=='$Nodes\n'): #si on rencontre des noeuds
 				tmp = l[i+1].split(" ")

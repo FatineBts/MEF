@@ -46,8 +46,7 @@ class Creation_paraview:
 		fichier.write('<Cells>\n')
 
 		fichier.write('<DataArray type="Int32" Name="connectivity">\n') 
-		######## connectivity : Pour chaque triangle on prend les numéro des points qui constituent le triangle #############
-		#Explication : pour chaque triangle uniquement (pas de segments) on récupère les numéro GLOBAUX des sommets
+		######## connectivity : Pour chaque element on prend les numéro des points qui le constitue  #############
 
 		#pour les triangles 
 		for k in self.Elements: 
@@ -67,8 +66,8 @@ class Creation_paraview:
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="Int32" Name="offsets">\n') 
-		######## offsets : Récupération de la fin de position de chaque triangle dans la partie connectivity###########
-		#Explication : on fait des pas de 3 car on a ajouté 3 éléments dans la partie connectivity
+		######## offsets : Récupération de la fin de position de chaque element dans la partie connectivity###########
+		#Explication : on fait des pas de 3 pour les triangles et 2 pour les segments
 		
 		pas = 0
 		for k in range(self.Nombre_Triangles): 
@@ -83,8 +82,9 @@ class Creation_paraview:
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="UInt8" Name="types">\n') 
+
 		########### types : On met les types des éléments ####################
-		#Explication : Pour des triangles le type est 5
+		#Explication : Pour des triangles le type est 5. Pour les segments le type est 3. 
 
 		for k in self.Elements:
 			if(k[1]==2): #triangle
@@ -94,12 +94,12 @@ class Creation_paraview:
 			if(k[1]==1): 
 				fichier.write(str(3) + ' ' + '\n')
 
-
 		fichier.write('</DataArray>\n')
 		fichier.write('</Cells>\n')
 		fichier.write('<PointData Scalars="solution">\n')
 
 		fichier.write('<DataArray type="Float64" Name="Real part" format="ascii">\n')
+
 		########## real part : ##########
 		#Explication : partie reelle des résultats obtenue par la fonction np.linalg.solve()
 
@@ -109,6 +109,7 @@ class Creation_paraview:
 		fichier.write('</DataArray>\n')
 
 		fichier.write('<DataArray type="Float64" Name="Imag part" format="ascii">\n')
+		
 		########## im part : ############
 		#Explication : partie imaginaire des résultats obtenue par la fonction np.linalg.solve()
 		for i in self.Resultat: 
