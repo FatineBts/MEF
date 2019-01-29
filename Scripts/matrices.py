@@ -15,6 +15,9 @@ import array as arr
 import numpy
 from cmath import * #pour les nombres complexes
 
+#gamma infini = bord exterieur
+#gamma = bord interieur
+
 class Matrice:
 	def __init__(self,Nombre_lignes, Nombre_Nodes,Nodes, Nombre_Elements,Elements):
 		self.Nombre_lignes = int(Nombre_lignes) 
@@ -28,8 +31,9 @@ class Matrice:
 	def f(self,x):
 		return 0
 
-	def u_inc(self,x):
-		return exp( 1j*self.k* (x[1]*np.cos(self.alpha) + x[2]*np.sin(self.alpha)) ) 
+	def u_inc(self,x): #onde helgotz
+		#return exp( 1j*self.k* (x[1]*np.cos(self.alpha) + x[2]*np.sin(self.alpha)) ) 
+		return exp(1j*self.k* (x[1]*np.cos(self.alpha) + x[2]*np.sin(self.alpha)) ) + 2*exp(1j*self.k* (x[1]*np.cos(self.alpha+np.pi/2) + x[2]*np.sin(self.alpha+np.pi/2)) )
 
 	def nombre_de_triangles(self): 
 		nombre_triangles = 0
